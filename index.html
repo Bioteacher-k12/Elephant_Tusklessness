@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tusklessness: Problem or Solution? — Case Study Studio</title>
+
+  <!-- Google Fonts: Inter for crisp legibility & JetBrains Mono for quantitative alignment -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace']
+          },
+          colors: {
+            forest: {
+              950: '#0d261c',
+              900: '#1b4332',
+              800: '#23533e',
+              700: '#2d6a4f',
+              100: '#d8f3dc',
+              50: '#f0fdf4'
+            },
+            earth: {
+              900: '#451a03',
+              800: '#78350f',
+              700: '#92400e',
+              100: '#fef3c7',
+              50: '#fffbeb'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Base typography & WCAG 2.1 AA visible focus indicators */
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #f6f7f5;
+      color: #0f172a;
+    }
+
+    :focus-visible {
+      outline: 3px solid #1b4332;
+      outline-offset: 2px;
+    }
+
+    /* Auto-resizing, word-wrapping textarea styling on screen */
+    textarea.studio-textarea {
+      resize: vertical;
+      overflow-y: hidden;
+      min-height: 4.5rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    /* Table 2 interactive row highlight states (WCAG AA high-contrast combinations) */
+    tr.row-highlight-ivory td,
+    tr.row-highlight-ivory th {
+      background-color: #fef3c7 !important;
+      color: #451a03 !important;
+    }
+
+    tr.row-highlight-tuskless td,
+    tr.row-highlight-tuskless th {
+      background-color: #d8f3dc !important;
+      color: #0d261c !important;
+    }
+
+    tr.row-highlight-total-killed td,
+    tr.row-highlight-total-killed th {
+      background-color: #dbeafe !important;
+      color: #1e3a8a !important;
+      font-weight: 800 !important;
+    }
+
+    tr.row-manual-active td,
+    tr.row-manual-active th {
+      background-color: #fef9c3 !important;
+    }
+
+    /* Clean horizontal stacked fraction layout for Part I formula & 2b/3b workspaces */
+    .formula-scroll-wrap {
+      overflow-x: auto;
+      max-width: 100%;
+      padding-bottom: 0.2rem;
+    }
+
+    .formula-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      white-space: nowrap;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .fraction-stack {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      vertical-align: middle;
+      padding: 0 0.25rem;
+    }
+
+    .fraction-num {
+      display: block;
+      width: 100%;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 0.35rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .fraction-den {
+      display: block;
+      width: 100%;
+      padding-top: 0.05rem;
+    }
+
+    /* Print mirror containers are hidden on screen and rendered cleanly in @media print */
+    .print-mirror {
+      display: none;
+    }
+
+    /* Print-to-PDF rules: guarantee multi-line word wrapping without clipping or overflow */
+    @media print {
+      @page {
+        margin: 0.6in;
+        size: letter portrait;
+      }
+
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 10.5pt;
+        line-height: 1.45;
+      }
+
+      /* Hide interactive buttons, sticky nav, modals, and raw form inputs */
+      .no-print,
+      header.sticky-app-header,
+      nav.section-nav,
+      button,
+      textarea.studio-textarea,
+      input.studio-input,
+      select.studio-select {
+        display: none !important;
+      }
+
+      /* Show print-only document header */
+      .print-only-header {
+        display: block !important;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #1b4332;
+      }
+
+      /* Render full-width, word-wrapping div mirrors in place of textareas & inputs */
+      .print-mirror {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        min-height: 1.75rem;
+        white-space: pre-wrap !important;
+        overflow-wrap: anywhere !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+        overflow: visible !important;
+        border: 1.5px solid #475569 !important;
+        border-radius: 6px !important;
+        padding: 7px 10px !important;
+        margin-top: 0.25rem;
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+        box-sizing: border-box !important;
+        font-size: 10pt;
+        line-height: 1.45;
+      }
+
+      .print-mirror.is-empty {
+        color: #64748b !important;
+        font-style: italic;
+      }
+
+      /* Ensure compact inline/fraction inputs have clean proportions when printed */
+      .inline-input-wrap {
+        min-width: 6.5rem;
+      }
+
+      .fraction-stack .print-mirror {
+        text-align: center;
+        margin-top: 0;
+      }
+
+      /* Clean card flattening & page break control */
+      .part-section {
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+        margin-bottom: 1.25rem !important;
+        padding: 1rem !important;
+      }
+
+      .question-card,
+      .avoid-break,
+      figure.chart-figure {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        overflow: visible !important;
+      }
+
+      /* Ensure Part II and Part III print cleanly even if still locked on screen */
+      #section-part2,
+      #part2-content-wrapper,
+      #section-part3 {
+        display: block !important;
+      }
+
+      #part2-locked-placeholder,
+      #part2-questions-locked-placeholder,
+      #part3-locked-placeholder {
+        display: none !important;
+      }
+
+      /* Preserve crisp vector colors & callout backgrounds */
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-forest-100 selection:text-forest-950">
+
+  <!-- Screen Reader Live Region for Status Announcements -->
+  <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Print-Only Document Header (Mirrors Student Name & Date — NO Class Period) -->
+  <div class="print-only-header hidden">
+    <div class="flex flex-wrap items-baseline justify-between gap-4">
+      <div>
+        <h1 class="text-xl font-extrabold text-slate-900">Tusklessness: Problem or Solution?</h1>
+        <p class="text-xs text-slate-700">High School Biology Case Study Studio • Evolutionary Selection &amp; Inheritance</p>
+      </div>
+      <div class="text-xs font-medium text-slate-900 flex gap-6">
+        <span><strong>Name:</strong> <span id="print-header-name">____________________</span></span>
+        <span><strong>Date:</strong> <span id="print-header-date">____________</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Top App Bar -->
+  <header class="sticky-app-header sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-xs no-print">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand / Title -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-forest-900 text-white flex items-center justify-center shadow-xs shrink-0" aria-hidden="true">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-slate-900 leading-tight">
+            Tusklessness: Problem or Solution? — Case Study Studio
+          </h1>
+          <p class="text-xs text-slate-600 hidden sm:block">
+            Guided Evolutionary Data Investigation • Zambia &amp; Gorongosa National Park
+          </p>
+        </div>
+      </div>
+
+      <!-- Progress, Auto-Save Badge, Reset & Print Actions -->
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+        <!-- Completion Counter -->
+        <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+          <span class="w-2 h-2 rounded-full bg-forest-700" aria-hidden="true"></span>
+          <span id="progress-text" class="text-xs font-semibold text-slate-800">0 of 25 items completed</span>
+        </div>
+
+        <!-- Auto-Save Status Pill -->
+        <span id="save-status" class="text-xs font-medium text-forest-900 bg-forest-50 border border-forest-100 px-2.5 py-1.5 rounded-xl" role="status">
+          Saved
+        </span>
+
+        <!-- Reset Button -->
+        <button type="button" id="btn-open-reset" class="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-rose-50 hover:text-rose-800 border border-slate-300 hover:border-rose-300 transition cursor-pointer">
+          Reset Worksheet
+        </button>
+
+        <!-- Print / Save PDF Button -->
+        <button type="button" id="btn-print-pdf" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-forest-900 hover:bg-forest-800 active:bg-forest-950 shadow-xs transition cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2m-2 0H8v4h8v-4z" />
+          </svg>
+          <span>Print / Save PDF</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Stage Navigation Strip -->
+    <nav aria-label="Investigation stages" class="section-nav bg-slate-50 border-t border-slate-200">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2 flex items-center gap-2 overflow-x-auto text-xs font-semibold">
+        <a href="#section-part1" class="px-3 py-1.5 rounded-lg bg-white text-slate-800 border border-slate-200 hover:border-forest-700 hover:text-forest-900 whitespace-nowrap transition">
+          Part I: Poaching Data &amp; Graph 1 (Q1–Q10)
+        </a>
+        <span class="text-slate-400" aria-hidden="true">→</span>
+        <a id="nav-link-part2" href="#section-part2" class="px-3 py-1.5 rounded-lg bg-white text-slate-500 border border-slate-200 hover:border-forest-700 whitespace-nowrap transition flex items-center gap-1.5">
+          <span id="nav-part2-lock-icon" aria-hidden="true">🔒</span>
+          <span>Part II: Selection &amp; Inheritance (Q11–Q20)</span>
+        </a>
+        <span class="text-slate-400" aria-hidden="true">→</span>
+        <a id="nav-link-part3" href="#section-part3" class="px-3 py-1.5 rounded-lg bg-white text-slate-500 border border-slate-200 hover:border-forest-700 whitespace-nowrap transition flex items-center gap-1.5">
+          <span id="nav-part3-lock-icon" aria-hidden="true">🔒</span>
+          <span>Part III: Scientific Argument (CER)</span>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8">
+
+    <!-- Student Information Card (ONLY Student Name and Date — NO Class Period) -->
+    <section id="section-student-info" aria-labelledby="heading-student-info" class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 sm:p-6 no-print">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <h2 id="heading-student-info" class="text-base font-bold text-slate-900">Student Identification</h2>
+        <span class="text-xs text-slate-600">Appears automatically on your exported PDF header</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="student-name" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">Student Name</label>
+          <input type="text" id="student-name" data-meta="studentName" placeholder="Enter your full name" class="studio-input w-full rounded-xl border border-slate-300 bg-slate-50 focus:bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400" />
+        </div>
+        <div>
+          <label for="student-date" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">Date</label>
+          <input type="date" id="student-date" data-meta="date" class="studio-input w-full rounded-xl border border-slate-300 bg-slate-50 focus:bg-white px-3.5 py-2.5 text-sm text-slate-900" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         PART I: POACHING DATA & SURVIVAL PATTERNS (Questions 1–10)
+         ======================================================================== -->
+    <section id="section-part1" aria-labelledby="heading-part1" class="part-section bg-white rounded-2xl border border-slate-200 shadow-xs p-5 sm:p-8 space-y-6">
+      <div class="border-b border-slate-200 pb-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-earth-100 text-earth-900 text-xs font-bold uppercase tracking-wider mb-2">
+          Part I • Empirical Data &amp; Quantitative Analysis
+        </div>
+        <h2 id="heading-part1" class="text-xl sm:text-2xl font-extrabold text-slate-900">
+          Part I: Poaching Data &amp; Survival Patterns
+        </h2>
+        <p class="mt-2 text-sm sm:text-base text-slate-700">
+          Use the data in <strong>Table 2</strong> from Nyirenda et al. (2015) to answer questions 1–4. (Use the <strong>&ldquo;Total No. Killed&rdquo;</strong> column for each of the three sites when calculating totals.)
+        </p>
+      </div>
+
+      <!-- Interactive Row Highlighting Controls -->
+      <div class="bg-slate-50 rounded-2xl border border-slate-200 p-4 space-y-3 no-print">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Interactive Table Explorer</span>
+          <span id="table-filter-status" class="text-xs font-medium text-slate-600">Tip: Click any row in the table or use a button below to isolate values.</span>
+        </div>
+        <div class="flex flex-wrap gap-2" role="group" aria-label="Table highlight filters">
+          <button type="button" data-highlight-mode="none" aria-pressed="true" class="filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-forest-900 text-white border border-forest-900 transition cursor-pointer">
+            Show All Rows
+          </button>
+          <button type="button" data-highlight-mode="ivory" aria-pressed="false" class="filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-white text-slate-800 border border-slate-300 hover:bg-earth-50 hover:border-amber-400 transition cursor-pointer">
+            Highlight &lsquo;Ivory Poached&rsquo; Rows
+          </button>
+          <button type="button" data-highlight-mode="tuskless" aria-pressed="false" class="filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-white text-slate-800 border border-slate-300 hover:bg-forest-50 hover:border-forest-700 transition cursor-pointer">
+            Highlight &lsquo;Tusklessness&rsquo; Rows
+          </button>
+          <button type="button" data-highlight-mode="total-killed" aria-pressed="false" class="filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-white text-slate-800 border border-slate-300 hover:bg-blue-50 hover:border-blue-400 transition cursor-pointer">
+            Highlight Total Killed Row
+          </button>
+        </div>
+      </div>
+
+      <!-- Nyirenda et al. (2015) Table 2 -->
+      <figure class="space-y-2">
+        <figcaption class="text-sm sm:text-base font-bold text-slate-900">
+          Table 2. Percentage of meat and ivory extracted and a total number of illegally killed elephants in Luangwa Valley, eastern Zambia, 2007-2013
+        </figcaption>
+
+        <div class="overflow-x-auto rounded-2xl border border-slate-300 shadow-2xs">
+          <table id="nyirenda-table" class="w-full text-xs text-center border-collapse bg-white">
+            <thead class="bg-slate-100 text-slate-900 font-bold">
+              <tr class="border-b border-slate-300">
+                <th rowspan="3" scope="col" class="px-3 py-2.5 text-left border-r border-slate-300 min-w-[205px] bg-slate-100 sticky left-0 z-10">
+                  Parameter
+                </th>
+                <th colspan="3" scope="colgroup" class="px-2 py-2 border-r border-slate-300 bg-slate-200/70">
+                  Lower Zambezi, 2012–2013
+                </th>
+                <th colspan="8" scope="colgroup" class="px-2 py-2 border-r border-slate-300 bg-slate-100">
+                  North Luangwa, 2007–2013
+                </th>
+                <th colspan="5" scope="colgroup" class="px-2 py-2 bg-slate-200/70">
+                  South Luangwa MIKE site, 2010–2013
+                </th>
+              </tr>
+              <tr class="border-b border-slate-300 text-[11px]">
+                <th colspan="2" scope="colgroup" class="px-2 py-1.5 border-r border-slate-200">Year</th>
+                <th rowspan="2" scope="col" class="px-2.5 py-1.5 border-r border-slate-300 bg-slate-200/60 font-extrabold">Total No.<br>Killed</th>
+
+                <th colspan="7" scope="colgroup" class="px-2 py-1.5 border-r border-slate-200">Year</th>
+                <th rowspan="2" scope="col" class="px-2.5 py-1.5 border-r border-slate-300 bg-slate-200/60 font-extrabold">Total No.<br>Killed</th>
+
+                <th colspan="4" scope="colgroup" class="px-2 py-1.5 border-r border-slate-200">Year</th>
+                <th rowspan="2" scope="col" class="px-2.5 py-1.5 bg-slate-200/60 font-extrabold">Total No.<br>Killed</th>
+              </tr>
+              <tr class="border-b-2 border-slate-400 font-mono text-[11px]">
+                <!-- Lower Zambezi years -->
+                <th scope="col" class="px-2 py-1.5 border-r border-slate-200">2012</th>
+                <th scope="col" class="px-2 py-1.5 border-r border-slate-200">2013</th>
+                <!-- North Luangwa years -->
+                <th scope="col" class="px-2 py-1.5 border-r border-slate-200">2007</th>
+                <th scope="col" class="px-2 py-1.5 border-r border-slate-200">2008</th>
+                <th scope="col" class="px-2 py-1.5 border-r border-slate-200">2009</th>
+                <th scope="col" class="px-2 py-1.5 border-r border-slate-200">2010</th>
+                <th scope="col" class="px-2 py-1.5 border-r border-slate-200">2011</th>
+                <th scope="col" class="px-2 py-1.5 border-r border-slate-200">2012</th>
+                <th scope="col" class="px-2 py-1.5 border-r border-slate-200">2013</th>
+                <!-- South Luangwa years -->
+                <th scope="col" class="px-2 py-1.5 border-r border-slate-200">2010</th>
+                <th scope="col" class="px-2 py-1.5 border-r border-slate-200">2011</th>
+                <th scope="col" class="px-2 py-1.5 border-r border-slate-200">2012</th>
+                <th scope="col" class="px-2 py-1.5 border-r border-slate-200">2013</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 font-mono text-slate-800">
+              <!-- Row 1: Meat and ivory poached -->
+              <tr data-row-type="ivory" tabindex="0" class="interactive-row hover:bg-slate-50 cursor-pointer transition-colors">
+                <th scope="row" class="px-3 py-2 text-left font-sans font-semibold text-slate-900 border-r border-slate-300 bg-white sticky left-0">
+                  Meat and ivory poached
+                </th>
+                <td class="px-2 py-2 border-r border-slate-100">50.00</td>
+                <td class="px-2 py-2 border-r border-slate-200">0</td>
+                <td class="px-2 py-2 font-bold border-r border-slate-300 bg-slate-50">5</td>
+
+                <td class="px-2 py-2 border-r border-slate-100">75.00</td>
+                <td class="px-2 py-2 border-r border-slate-100">33.33</td>
+                <td class="px-2 py-2 border-r border-slate-100">16.67</td>
+                <td class="px-2 py-2 border-r border-slate-100">33.33</td>
+                <td class="px-2 py-2 border-r border-slate-100">31.58</td>
+                <td class="px-2 py-2 border-r border-slate-100">18.18</td>
+                <td class="px-2 py-2 border-r border-slate-200">9.30</td>
+                <td class="px-2 py-2 font-bold border-r border-slate-300 bg-slate-50">27</td>
+
+                <td class="px-2 py-2 border-r border-slate-100">54.17</td>
+                <td class="px-2 py-2 border-r border-slate-100">60.98</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-200">29.27</td>
+                <td class="px-2 py-2 font-bold bg-slate-50">50</td>
+              </tr>
+
+              <!-- Row 2: Meat and ivory intact -->
+              <tr data-row-type="other" tabindex="0" class="interactive-row hover:bg-slate-50 cursor-pointer transition-colors">
+                <th scope="row" class="px-3 py-2 text-left font-sans font-semibold text-slate-900 border-r border-slate-300 bg-white sticky left-0">
+                  Meat and ivory intact
+                </th>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-200">33.33</td>
+                <td class="px-2 py-2 font-bold border-r border-slate-300 bg-slate-50">3</td>
+
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-100">16.67</td>
+                <td class="px-2 py-2 border-r border-slate-100">5.26</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-200">11.63</td>
+                <td class="px-2 py-2 font-bold border-r border-slate-300 bg-slate-50">8</td>
+
+                <td class="px-2 py-2 border-r border-slate-100">8.33</td>
+                <td class="px-2 py-2 border-r border-slate-100">14.63</td>
+                <td class="px-2 py-2 border-r border-slate-100">37.50</td>
+                <td class="px-2 py-2 border-r border-slate-200">12.20</td>
+                <td class="px-2 py-2 font-bold bg-slate-50">25</td>
+              </tr>
+
+              <!-- Row 3: Meat intact but ivory poached -->
+              <tr data-row-type="ivory" tabindex="0" class="interactive-row hover:bg-slate-50 cursor-pointer transition-colors">
+                <th scope="row" class="px-3 py-2 text-left font-sans font-semibold text-slate-900 border-r border-slate-300 bg-white sticky left-0">
+                  Meat intact but ivory poached
+                </th>
+                <td class="px-2 py-2 border-r border-slate-100">40.00</td>
+                <td class="px-2 py-2 border-r border-slate-200">22.22</td>
+                <td class="px-2 py-2 font-bold border-r border-slate-300 bg-slate-50">6</td>
+
+                <td class="px-2 py-2 border-r border-slate-100">25.00</td>
+                <td class="px-2 py-2 border-r border-slate-100">66.67</td>
+                <td class="px-2 py-2 border-r border-slate-100">58.33</td>
+                <td class="px-2 py-2 border-r border-slate-100">33.33</td>
+                <td class="px-2 py-2 border-r border-slate-100">36.84</td>
+                <td class="px-2 py-2 border-r border-slate-100">81.82</td>
+                <td class="px-2 py-2 border-r border-slate-200">58.14</td>
+                <td class="px-2 py-2 font-bold border-r border-slate-300 bg-slate-50">75</td>
+
+                <td class="px-2 py-2 border-r border-slate-100">20.83</td>
+                <td class="px-2 py-2 border-r border-slate-100">12.20</td>
+                <td class="px-2 py-2 border-r border-slate-100">3.13</td>
+                <td class="px-2 py-2 border-r border-slate-200">29.27</td>
+                <td class="px-2 py-2 font-bold bg-slate-50">23</td>
+              </tr>
+
+              <!-- Row 4: Meat poached but ivory intact -->
+              <tr data-row-type="other" tabindex="0" class="interactive-row hover:bg-slate-50 cursor-pointer transition-colors">
+                <th scope="row" class="px-3 py-2 text-left font-sans font-semibold text-slate-900 border-r border-slate-300 bg-white sticky left-0">
+                  Meat poached but ivory intact
+                </th>
+                <td class="px-2 py-2 border-r border-slate-100">10.00</td>
+                <td class="px-2 py-2 border-r border-slate-200">44.44</td>
+                <td class="px-2 py-2 font-bold border-r border-slate-300 bg-slate-50">5</td>
+
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-100">16.67</td>
+                <td class="px-2 py-2 border-r border-slate-100">16.67</td>
+                <td class="px-2 py-2 border-r border-slate-100">15.79</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-200">18.60</td>
+                <td class="px-2 py-2 font-bold border-r border-slate-300 bg-slate-50">15</td>
+
+                <td class="px-2 py-2 border-r border-slate-100">12.50</td>
+                <td class="px-2 py-2 border-r border-slate-100">2.44</td>
+                <td class="px-2 py-2 border-r border-slate-100">59.38</td>
+                <td class="px-2 py-2 border-r border-slate-200">29.27</td>
+                <td class="px-2 py-2 font-bold bg-slate-50">35</td>
+              </tr>
+
+              <!-- Row 5: Meat poached but ivory absent (tusklessness) -->
+              <tr data-row-type="tuskless" tabindex="0" class="interactive-row hover:bg-slate-50 cursor-pointer transition-colors">
+                <th scope="row" class="px-3 py-2 text-left font-sans font-semibold text-slate-900 border-r border-slate-300 bg-white sticky left-0">
+                  Meat poached but ivory absent (tusklessness)
+                </th>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-200">0</td>
+                <td class="px-2 py-2 font-bold border-r border-slate-300 bg-slate-50">0</td>
+
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-100">8.33</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-100">10.53</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-200">2.33</td>
+                <td class="px-2 py-2 font-bold border-r border-slate-300 bg-slate-50">4</td>
+
+                <td class="px-2 py-2 border-r border-slate-100">4.17</td>
+                <td class="px-2 py-2 border-r border-slate-100">4.88</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-200">0</td>
+                <td class="px-2 py-2 font-bold bg-slate-50">3</td>
+              </tr>
+
+              <!-- Row 6: Meat intact but ivory naturally absent (tusklessness) -->
+              <tr data-row-type="tuskless" tabindex="0" class="interactive-row hover:bg-slate-50 cursor-pointer transition-colors">
+                <th scope="row" class="px-3 py-2 text-left font-sans font-semibold text-slate-900 border-r border-slate-300 bg-white sticky left-0">
+                  Meat intact but ivory naturally absent (tusklessness)
+                </th>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-200">0</td>
+                <td class="px-2 py-2 font-bold border-r border-slate-300 bg-slate-50">0</td>
+
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-200">0</td>
+                <td class="px-2 py-2 font-bold border-r border-slate-300 bg-slate-50">0</td>
+
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-100">4.88</td>
+                <td class="px-2 py-2 border-r border-slate-100">0</td>
+                <td class="px-2 py-2 border-r border-slate-200">0</td>
+                <td class="px-2 py-2 font-bold bg-slate-50">3</td>
+              </tr>
+
+              <!-- Row 7: Total % -->
+              <tr class="bg-slate-100/80 font-semibold border-t-2 border-slate-300">
+                <th scope="row" class="px-3 py-2 text-left font-sans font-bold text-slate-900 border-r border-slate-300 bg-slate-100 sticky left-0">
+                  Total %
+                </th>
+                <td class="px-2 py-2 border-r border-slate-200">100.00</td>
+                <td class="px-2 py-2 border-r border-slate-200">100.00</td>
+                <td class="px-2 py-2 border-r border-slate-300">-</td>
+
+                <td class="px-2 py-2 border-r border-slate-200">100.00</td>
+                <td class="px-2 py-2 border-r border-slate-200">100.00</td>
+                <td class="px-2 py-2 border-r border-slate-200">100.00</td>
+                <td class="px-2 py-2 border-r border-slate-200">100.00</td>
+                <td class="px-2 py-2 border-r border-slate-200">100.00</td>
+                <td class="px-2 py-2 border-r border-slate-200">100.00</td>
+                <td class="px-2 py-2 border-r border-slate-200">100.00</td>
+                <td class="px-2 py-2 border-r border-slate-300">-</td>
+
+                <td class="px-2 py-2 border-r border-slate-200">100.00</td>
+                <td class="px-2 py-2 border-r border-slate-200">100.00</td>
+                <td class="px-2 py-2 border-r border-slate-200">100.00</td>
+                <td class="px-2 py-2 border-r border-slate-200">100.00</td>
+                <td class="px-2 py-2">-</td>
+              </tr>
+
+              <!-- Row 8: Total number of illegally killed elephants -->
+              <tr data-row-type="total-killed" tabindex="0" class="interactive-row bg-slate-200/70 font-extrabold text-slate-950 border-t border-slate-300 cursor-pointer transition-colors">
+                <th scope="row" class="px-3 py-2.5 text-left font-sans font-extrabold text-slate-950 border-r border-slate-300 bg-slate-200 sticky left-0">
+                  Total number of illegally killed elephants
+                </th>
+                <td class="px-2 py-2.5 border-r border-slate-300">10</td>
+                <td class="px-2 py-2.5 border-r border-slate-300">9</td>
+                <td class="px-2 py-2.5 border-r border-slate-400 bg-slate-300/70">19</td>
+
+                <td class="px-2 py-2.5 border-r border-slate-300">4</td>
+                <td class="px-2 py-2.5 border-r border-slate-300">6</td>
+                <td class="px-2 py-2.5 border-r border-slate-300">12</td>
+                <td class="px-2 py-2.5 border-r border-slate-300">12</td>
+                <td class="px-2 py-2.5 border-r border-slate-300">19</td>
+                <td class="px-2 py-2.5 border-r border-slate-300">33</td>
+                <td class="px-2 py-2.5 border-r border-slate-300">43</td>
+                <td class="px-2 py-2.5 border-r border-slate-400 bg-slate-300/70">129</td>
+
+                <td class="px-2 py-2.5 border-r border-slate-300">24</td>
+                <td class="px-2 py-2.5 border-r border-slate-300">41</td>
+                <td class="px-2 py-2.5 border-r border-slate-300">33</td>
+                <td class="px-2 py-2.5 border-r border-slate-300">41</td>
+                <td class="px-2 py-2.5 bg-slate-300/70">139</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="text-xs text-slate-600 italic">
+          From Nyirenda, V. R., P. A. Lindsey, E. Phiri, I. Stevenson, C. Chomba, N. Namukonde, W. J. Myburgh, and B. K. Reilly. (2015). Trends in Illegal Killing of African Elephants (<em>Loxodonta africana</em>) in the Luangwa and Zambezi Ecosystems of Zambia. <em>Environment and Natural Resources Research</em>.
+        </p>
+      </figure>
+
+      <!-- Clean Horizontal Stacked Mathematical Formula Card -->
+      <div class="bg-forest-50 border border-forest-100 rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 avoid-break">
+        <div class="space-y-2 min-w-0">
+          <span class="block text-xs font-bold uppercase tracking-wider text-forest-900">Percentage Formula (Questions 2b &amp; 3b)</span>
+          <div class="formula-scroll-wrap">
+            <div class="formula-inline text-xs sm:text-sm">
+              <span>Percent of Total (%) =</span>
+              <span class="fraction-stack">
+                <span class="fraction-num">Number of Elephants in Category</span>
+                <span class="fraction-den">Total Number of Illegally Killed Elephants</span>
+              </span>
+              <span>&times; 100</span>
+            </div>
+          </div>
+        </div>
+        <div class="text-xs text-forest-950 bg-white/95 border border-forest-100 rounded-xl px-3.5 py-2.5 lg:max-w-xs shrink-0">
+          <strong>Procedural Note:</strong> Use the <em>Total No. Killed</em> columns across all three sites when computing your category numerator and overall denominator.
+        </div>
+      </div>
+
+      <!-- Questions 1–4 -->
+      <div class="space-y-5">
+        <!-- Question 1 (3 labeled text inputs: Site 1, Site 2, Site 3) -->
+        <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-3">
+          <p class="text-sm sm:text-base font-bold text-slate-900">
+            1. In what three sites were poached elephants surveyed?
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label for="q1-site1" class="block text-xs font-semibold text-slate-700 mb-1">Site 1</label>
+              <input type="text" id="q1-site1" data-item="1" placeholder="Type your response here..." class="studio-input w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400" />
+            </div>
+            <div>
+              <label for="q1-site2" class="block text-xs font-semibold text-slate-700 mb-1">Site 2</label>
+              <input type="text" id="q1-site2" data-item="2" placeholder="Type your response here..." class="studio-input w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400" />
+            </div>
+            <div>
+              <label for="q1-site3" class="block text-xs font-semibold text-slate-700 mb-1">Site 3</label>
+              <input type="text" id="q1-site3" data-item="3" placeholder="Type your response here..." class="studio-input w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400" />
+            </div>
+          </div>
+        </article>
+
+        <!-- Question 2 (2a & 2b) -->
+        <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-4">
+          <div class="border-b border-slate-200 pb-2">
+            <h3 class="text-sm sm:text-base font-bold text-slate-900">2. Ivory poaching targets elephants with tusks.</h3>
+          </div>
+
+          <!-- Q2a -->
+          <div class="space-y-2">
+            <label for="q2a" class="block text-sm font-semibold text-slate-900">
+              2a. From all three sites surveyed, what was the total number of elephants killed for their ivory? <span class="font-normal text-slate-700">(Look for &ldquo;ivory poached&rdquo;)</span>
+            </label>
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="inline-input-wrap w-40">
+                <input type="number" id="q2a" data-item="4" placeholder="Enter number" class="studio-input w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm font-mono font-semibold text-slate-900 placeholder:text-slate-400" />
+              </div>
+              <span class="text-sm text-slate-700">elephants</span>
+              <button type="button" id="btn-check-q2a" class="no-print px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-forest-50 text-forest-900 border border-forest-700/40 transition cursor-pointer">
+                Check Work
+              </button>
+            </div>
+            <div id="feedback-q2a" class="text-xs font-medium hidden rounded-xl px-3 py-2" role="status"></div>
+          </div>
+
+          <!-- Q2b: ONLY the clean inline stacked fraction calculation workspace (NO extra calculation textarea below!) -->
+          <div class="space-y-3 pt-2 border-t border-slate-200">
+            <p class="text-sm font-semibold text-slate-900">
+              2b. What percent of the total illegally killed elephants does this number represent? Show your work using the formula above:
+            </p>
+            <div class="bg-white p-4 rounded-xl border border-slate-200">
+              <div class="formula-scroll-wrap">
+                <div class="formula-inline gap-3">
+                  <div class="fraction-stack w-40 sm:w-44">
+                    <div class="fraction-num">
+                      <label for="q2b-num" class="sr-only">Numerator (Number of Elephants in Category)</label>
+                      <input type="number" id="q2b-num" data-item="4" placeholder="Enter number" class="studio-input w-full rounded-lg border border-slate-300 px-3 py-1.5 text-center text-sm font-mono text-slate-900 placeholder:text-slate-400" />
+                    </div>
+                    <div class="fraction-den">
+                      <label for="q2b-den" class="sr-only">Denominator (Total Number of Illegally Killed Elephants)</label>
+                      <input type="number" id="q2b-den" data-item="4" placeholder="Enter number" class="studio-input w-full rounded-lg border border-slate-300 px-3 py-1.5 text-center text-sm font-mono text-slate-900 placeholder:text-slate-400" />
+                    </div>
+                  </div>
+                  <span class="text-sm sm:text-base font-mono font-bold text-slate-800">&times; 100 =</span>
+                  <div class="inline-flex items-center gap-1.5">
+                    <div class="inline-input-wrap w-28">
+                      <label for="q2b-pct" class="sr-only">Final Percentage (%)</label>
+                      <input type="number" step="0.01" id="q2b-pct" data-item="4" placeholder="Enter %" class="studio-input w-full rounded-lg border border-slate-300 px-3 py-2 text-center text-sm font-mono font-bold text-slate-900 placeholder:text-slate-400" />
+                    </div>
+                    <span class="text-sm sm:text-base font-mono font-bold text-slate-900">%</span>
+                  </div>
+                  <button type="button" id="btn-check-q2b" class="no-print ml-1 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-forest-50 text-forest-900 border border-forest-700/40 transition cursor-pointer">
+                    Check Work
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div id="feedback-q2b" class="text-xs font-medium hidden rounded-xl px-3 py-2" role="status"></div>
+          </div>
+        </article>
+
+        <!-- Question 3 (3a, 3b, 3c) -->
+        <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-4">
+          <div class="border-b border-slate-200 pb-2">
+            <h3 class="text-sm sm:text-base font-bold text-slate-900">3. Some elephants are born naturally without tusks.</h3>
+          </div>
+
+          <!-- Q3a -->
+          <div class="space-y-2">
+            <label for="q3a" class="block text-sm font-semibold text-slate-900">
+              3a. From all three sites surveyed, what was the total number of tuskless elephants killed? <span class="font-normal text-slate-700">(Look for &ldquo;tusklessness&rdquo;)</span>
+            </label>
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="inline-input-wrap w-40">
+                <input type="number" id="q3a" data-item="5" placeholder="Enter number" class="studio-input w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm font-mono font-semibold text-slate-900 placeholder:text-slate-400" />
+              </div>
+              <span class="text-sm text-slate-700">tuskless elephants</span>
+              <button type="button" id="btn-check-q3a" class="no-print px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-forest-50 text-forest-900 border border-forest-700/40 transition cursor-pointer">
+                Check Work
+              </button>
+            </div>
+            <div id="feedback-q3a" class="text-xs font-medium hidden rounded-xl px-3 py-2" role="status"></div>
+          </div>
+
+          <!-- Q3b: ONLY the clean inline stacked fraction calculation workspace (NO extra calculation textarea below!) -->
+          <div class="space-y-3 pt-2 border-t border-slate-200">
+            <p class="text-sm font-semibold text-slate-900">
+              3b. What percent of the total illegally killed elephants does this number represent? Show your work using the formula above:
+            </p>
+            <div class="bg-white p-4 rounded-xl border border-slate-200">
+              <div class="formula-scroll-wrap">
+                <div class="formula-inline gap-3">
+                  <div class="fraction-stack w-40 sm:w-44">
+                    <div class="fraction-num">
+                      <label for="q3b-num" class="sr-only">Numerator (Number of Elephants in Category)</label>
+                      <input type="number" id="q3b-num" data-item="5" placeholder="Enter number" class="studio-input w-full rounded-lg border border-slate-300 px-3 py-1.5 text-center text-sm font-mono text-slate-900 placeholder:text-slate-400" />
+                    </div>
+                    <div class="fraction-den">
+                      <label for="q3b-den" class="sr-only">Denominator (Total Number of Illegally Killed Elephants)</label>
+                      <input type="number" id="q3b-den" data-item="5" placeholder="Enter number" class="studio-input w-full rounded-lg border border-slate-300 px-3 py-1.5 text-center text-sm font-mono text-slate-900 placeholder:text-slate-400" />
+                    </div>
+                  </div>
+                  <span class="text-sm sm:text-base font-mono font-bold text-slate-800">&times; 100 =</span>
+                  <div class="inline-flex items-center gap-1.5">
+                    <div class="inline-input-wrap w-28">
+                      <label for="q3b-pct" class="sr-only">Final Percentage (%)</label>
+                      <input type="number" step="0.01" id="q3b-pct" data-item="5" placeholder="Enter %" class="studio-input w-full rounded-lg border border-slate-300 px-3 py-2 text-center text-sm font-mono font-bold text-slate-900 placeholder:text-slate-400" />
+                    </div>
+                    <span class="text-sm sm:text-base font-mono font-bold text-slate-900">%</span>
+                  </div>
+                  <button type="button" id="btn-check-q3b" class="no-print ml-1 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-forest-50 text-forest-900 border border-forest-700/40 transition cursor-pointer">
+                    Check Work
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div id="feedback-q3b" class="text-xs font-medium hidden rounded-xl px-3 py-2" role="status"></div>
+          </div>
+
+          <!-- Q3c -->
+          <div class="space-y-2 pt-2 border-t border-slate-200">
+            <label for="q3c" class="block text-sm font-semibold text-slate-900">
+              3c. What is a possible reason these tuskless individuals were killed even though they had no ivory?
+            </label>
+            <textarea id="q3c" data-item="5" rows="2" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+          </div>
+        </article>
+
+        <!-- Question 4 (4a & 4b) -->
+        <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-4">
+          <div class="border-b border-slate-200 pb-2">
+            <h3 class="text-sm sm:text-base font-bold text-slate-900">4. Compare your answers from Questions 2 and 3:</h3>
+          </div>
+
+          <!-- Q4a -->
+          <div class="space-y-2">
+            <label for="q4a-pct" class="block text-sm font-semibold text-slate-900">
+              4a. What is the percentage difference between the elephants killed for ivory (Question 2b) and the tuskless elephants killed (Question 3b)?
+            </label>
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="inline-input-wrap w-40">
+                <input type="number" step="0.01" id="q4a-pct" data-item="6" placeholder="Enter %" class="studio-input w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm font-mono font-bold text-slate-900 placeholder:text-slate-400" />
+              </div>
+              <span class="text-sm font-medium text-slate-700">percentage points</span>
+              <button type="button" id="btn-check-q4a" class="no-print px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-forest-50 text-forest-900 border border-forest-700/40 transition cursor-pointer">
+                Check Work
+              </button>
+            </div>
+            <div id="feedback-q4a" class="text-xs font-medium hidden rounded-xl px-3 py-2" role="status"></div>
+          </div>
+
+          <!-- Q4b -->
+          <div class="space-y-2 pt-2 border-t border-slate-200">
+            <label for="q4b" class="block text-sm font-semibold text-slate-900">
+              4b. Why do you think this difference exists?
+            </label>
+            <textarea id="q4b" data-item="6" rows="2" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+          </div>
+        </article>
+      </div>
+
+      <!-- Gorongosa Graph 1 Section Divider -->
+      <div class="pt-4 border-t-2 border-slate-200 space-y-2">
+        <span class="inline-block px-3 py-1 rounded-full bg-forest-100 text-forest-950 text-xs font-bold uppercase tracking-wider">
+          Gorongosa National Park • Age-Cohort Comparison
+        </span>
+        <p class="text-sm sm:text-base text-slate-800 font-medium">
+          Use the bar graph comparing <strong>% Tuskless Females</strong> across age groups to answer questions 5–10.
+        </p>
+      </div>
+
+      <!-- Gorongosa Graph 1 (Centered SVG Bar Chart + Required Clarifying Note — NO Regime/Age Group table) -->
+      <figure class="chart-figure bg-slate-50 rounded-2xl border border-slate-200 p-4 sm:p-6 space-y-4">
+        <figcaption class="text-sm sm:text-base font-bold text-slate-900 text-center">
+          Gorongosa Graph 1: % Tuskless Females Across Age Groups
+        </figcaption>
+
+        <div class="max-w-xl mx-auto">
+          <svg viewBox="0 0 460 270" class="w-full h-auto bg-white rounded-xl border border-slate-200 p-2 shadow-2xs" role="img" aria-labelledby="g1-svg-title g1-svg-desc">
+            <title id="g1-svg-title">Gorongosa Graph 1: % Tuskless Females Across Age Groups</title>
+            <desc id="g1-svg-desc">Bar graph comparing percentage of tuskless female elephants: All Ages is 6 percent, and 20 plus Years Old is 50 percent.</desc>
+            <defs>
+              <pattern id="g1-hatch-green" width="8" height="8" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                <rect width="8" height="8" fill="#1e7e4f"/>
+                <line x1="0" y1="0" x2="0" y2="8" stroke="#145334" stroke-width="2"/>
+              </pattern>
+              <pattern id="g1-hatch-coral" width="8" height="8" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+                <rect width="8" height="8" fill="#c94a38"/>
+                <line x1="0" y1="0" x2="0" y2="8" stroke="#963325" stroke-width="2"/>
+              </pattern>
+            </defs>
+
+            <!-- Y-Axis Label -->
+            <text x="18" y="130" transform="rotate(-90 18 130)" text-anchor="middle" fill="#0f172a" font-size="13" font-weight="700">
+              % Tuskless Females
+            </text>
+
+            <!-- Horizontal Gridlines (y=220 down to y=30 => 190px => 1.9px per %) -->
+            <g stroke="#e2e8f0" stroke-width="1">
+              <line x1="68" y1="30" x2="430" y2="30"/>
+              <line x1="68" y1="68" x2="430" y2="68"/>
+              <line x1="68" y1="106" x2="430" y2="106"/>
+              <line x1="68" y1="144" x2="430" y2="144"/>
+              <line x1="68" y1="182" x2="430" y2="182"/>
+            </g>
+
+            <!-- Y-Axis Tick Text -->
+            <g fill="#334155" font-size="11.5" font-weight="600" text-anchor="end">
+              <text x="60" y="34">100</text>
+              <text x="60" y="72">80</text>
+              <text x="60" y="110">60</text>
+              <text x="60" y="148">40</text>
+              <text x="60" y="186">20</text>
+              <text x="60" y="224">0</text>
+            </g>
+
+            <!-- Axes -->
+            <line x1="68" y1="26" x2="68" y2="220" stroke="#0f172a" stroke-width="2"/>
+            <line x1="68" y1="220" x2="430" y2="220" stroke="#0f172a" stroke-width="2"/>
+
+            <!-- Bar 1: All Ages = 6% (#1e7e4f) -->
+            <rect x="125" y="208.6" width="64" height="11.4" rx="4" fill="url(#g1-hatch-green)" stroke="#145334" stroke-width="1.5"/>
+            <text x="157" y="201" text-anchor="middle" fill="#1e7e4f" font-size="14" font-weight="800">6%</text>
+            <text x="157" y="244" text-anchor="middle" fill="#0f172a" font-size="12.5" font-weight="700">All Ages</text>
+
+            <!-- Bar 2: 20+ Years Old = 50% (#c94a38) -->
+            <rect x="295" y="125" width="64" height="95" rx="4" fill="url(#g1-hatch-coral)" stroke="#963325" stroke-width="1.5"/>
+            <text x="327" y="117" text-anchor="middle" fill="#c94a38" font-size="14" font-weight="800">50%</text>
+            <text x="327" y="244" text-anchor="middle" fill="#0f172a" font-size="12.5" font-weight="700">20+ Years Old</text>
+          </svg>
+        </div>
+
+        <!-- Required Clarifying Note Immediately Below Gorongosa Graph 1 -->
+        <div class="max-w-2xl mx-auto bg-forest-50 border border-forest-700/30 rounded-xl px-4 py-3 text-xs sm:text-sm text-forest-950 font-medium">
+          The green &lsquo;All Ages&rsquo; (6%) bar represents the normal rate of tusklessness in African elephant populations with low poaching&mdash;NOT the current overall average of Gorongosa.
+        </div>
+      </figure>
+
+      <!-- Questions 5–10 -->
+      <div class="space-y-5">
+        <!-- Question 5 -->
+        <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-2">
+          <label for="q5" class="block text-sm sm:text-base font-bold text-slate-900">
+            5. What is this graph describing?
+          </label>
+          <textarea id="q5" data-item="7" rows="2" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+        </article>
+
+        <!-- Question 6 -->
+        <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-2">
+          <label for="q6" class="block text-sm sm:text-base font-bold text-slate-900">
+            6. What does the bar on the left (All Ages / Low-Poaching Population) tell you?
+          </label>
+          <textarea id="q6" data-item="8" rows="2" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+        </article>
+
+        <!-- Question 7 -->
+        <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-2">
+          <label for="q7" class="block text-sm sm:text-base font-bold text-slate-900">
+            7. What does the bar on the right (Civil War Survivors) tell you?
+          </label>
+          <textarea id="q7" data-item="9" rows="2" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+        </article>
+
+        <!-- Question 8 -->
+        <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-2">
+          <label for="q8" class="block text-sm sm:text-base font-bold text-slate-900">
+            8. Civil war started in this area about 50 years ago and lasted for 15 years. What does the difference between these two bars tell us about how the civil war affected the elephant population?
+          </label>
+          <textarea id="q8" data-item="10" rows="3" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+        </article>
+
+        <!-- Question 9 -->
+        <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-2">
+          <label for="q9" class="block text-sm sm:text-base font-bold text-slate-900">
+            9. Based on what you know about DNA and inheritance, what causes an elephant to be born without tusks, and how is this trait passed from parents to offspring?
+          </label>
+          <textarea id="q9" data-item="11" rows="3" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+        </article>
+
+        <!-- Question 10: Prediction Gate -->
+        <article id="prediction-gate-card" class="question-card rounded-2xl border-2 border-forest-800 bg-forest-50/60 p-5 sm:p-6 space-y-4 shadow-2xs">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-forest-900 text-white text-xs font-bold uppercase tracking-wider">
+              <span aria-hidden="true">🔬</span> Prediction Gate • Unlocks Part II
+            </span>
+            <span id="prediction-status-badge" class="text-xs font-bold text-forest-950 bg-white px-3 py-1 rounded-full border border-forest-700/30">
+              Required before viewing Part II
+            </span>
+          </div>
+
+          <p class="text-sm sm:text-base font-bold text-slate-900">
+            10. The civil war in Mozambique ended about 35 years ago. Make a prediction as to whether you think there is more or less tusklessness among younger elephants (under 20 years old) compared to the 50% of older civil war survivors.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <fieldset class="md:col-span-5 space-y-2">
+              <legend class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5">
+                Select Your Prediction
+              </legend>
+              <label class="flex items-start gap-2.5 p-3 rounded-xl border border-slate-300 bg-white hover:border-forest-700 cursor-pointer transition">
+                <input type="radio" name="q10-radio" value="More tusklessness than 50%" class="mt-0.5 accent-forest-900" />
+                <span class="text-xs sm:text-sm font-semibold text-slate-900">More tusklessness than 50%</span>
+              </label>
+              <label class="flex items-start gap-2.5 p-3 rounded-xl border border-slate-300 bg-white hover:border-forest-700 cursor-pointer transition">
+                <input type="radio" name="q10-radio" value="Less tusklessness than 50%" class="mt-0.5 accent-forest-900" />
+                <span class="text-xs sm:text-sm font-semibold text-slate-900">Less tusklessness than 50%</span>
+              </label>
+              <label class="flex items-start gap-2.5 p-3 rounded-xl border border-slate-300 bg-white hover:border-forest-700 cursor-pointer transition">
+                <input type="radio" name="q10-radio" value="About the same as 50%" class="mt-0.5 accent-forest-900" />
+                <span class="text-xs sm:text-sm font-semibold text-slate-900">About the same as 50%</span>
+              </label>
+            </fieldset>
+
+            <div class="md:col-span-7 space-y-1.5">
+              <label for="q10-reason" class="block text-xs font-bold uppercase tracking-wider text-slate-800">
+                Explain Your Rationale
+              </label>
+              <textarea id="q10-reason" data-item="12" rows="4" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+            </div>
+          </div>
+
+          <div id="prediction-error" class="hidden text-xs font-semibold text-rose-950 bg-rose-100 border border-rose-300 rounded-xl px-3.5 py-2.5" role="alert"></div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-1 no-print">
+            <button type="button" id="btn-submit-prediction" class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-forest-900 hover:bg-forest-800 active:bg-forest-950 text-white text-sm font-bold shadow-xs transition cursor-pointer">
+              <span aria-hidden="true">🔓</span>
+              <span id="btn-submit-prediction-text">Submit Prediction &amp; Unlock Part II</span>
+            </button>
+            <span class="text-xs text-slate-600">Your prediction will appear above Question 11 for comparison.</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         PART II: SELECTION FOR TUSKLESS ELEPHANTS (Questions 11–20)
+         1) Locked until Question 10 Prediction Gate is submitted.
+         2) Graph 2, Inheritance Diagram & Q11–20 stay locked until student clicks the video link.
+         ======================================================================== -->
+    <div id="part2-locked-placeholder" class="bg-slate-100 border-2 border-dashed border-slate-300 rounded-2xl p-6 sm:p-8 text-center space-y-2 no-print">
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-200 text-slate-700 text-xl mx-auto" aria-hidden="true">
+        🔒
+      </div>
+      <h2 class="text-lg font-extrabold text-slate-900">Part II Is Locked</h2>
+      <p class="text-sm text-slate-700 max-w-xl mx-auto">
+        Complete and submit your prediction in <strong>Question 10</strong> above to unlock Part II.
+      </p>
+    </div>
+
+    <section id="section-part2" aria-labelledby="heading-part2" class="part-section hidden bg-white rounded-2xl border border-slate-200 shadow-xs p-5 sm:p-8 space-y-6">
+      <div class="border-b border-slate-200 pb-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-earth-100 text-earth-900 text-xs font-bold uppercase tracking-wider mb-2">
+          Part II • Natural Selection &amp; Sex-Linked Inheritance
+        </div>
+        <h2 id="heading-part2" class="text-xl sm:text-2xl font-extrabold text-slate-900">
+          Part II: Selection for Tuskless Elephants
+        </h2>
+        <p class="mt-2 text-sm sm:text-base text-slate-700">
+          Watch this video clip: <strong>Selection for Tuskless Elephants</strong>. Use the updated three-bar graph (below) and information from the video to answer questions 11–20.
+        </p>
+      </div>
+
+      <!-- Mandatory Clickable Video Checkpoint Card at the Very Start of Part II -->
+      <div id="video-checkpoint-card" class="rounded-2xl border-2 border-forest-800 bg-forest-50/75 p-5 sm:p-6 space-y-4 shadow-2xs no-print">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-forest-900 text-white text-xs font-bold uppercase tracking-wider">
+            <span aria-hidden="true">🎬</span> Step 1 • Watch Video Clip to Unlock Graph 2 &amp; Questions 11–20
+          </span>
+          <span id="video-checkpoint-status" class="text-xs font-bold text-forest-950 bg-white px-3 py-1 rounded-full border border-forest-700/30" role="status">
+            Status: Not yet clicked — Click video link below to unlock
+          </span>
+        </div>
+
+        <div class="space-y-1.5">
+          <h3 class="text-base sm:text-lg font-extrabold text-slate-900">
+            Selection for Tuskless Elephants
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Click the video link below to open and watch the clip in a new browser tab. Clicking this link immediately unlocks <strong>Gorongosa Graph 2</strong>, the <strong>Genetic Inheritance Diagram</strong>, and <strong>Questions 11–20</strong>.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 pt-1">
+          <a
+            id="btn-watch-video"
+            href="https://drive.google.com/file/d/1DDMf6K9kpMbpVajQ-_AcPJpyvnBC3qi_/view?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-forest-900 hover:bg-forest-800 active:bg-forest-950 text-white text-sm font-bold shadow-xs transition cursor-pointer">
+            <span aria-hidden="true">▶</span>
+            <span>Open &amp; Watch Video: Selection for Tuskless Elephants</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+          <button
+            type="button"
+            id="btn-already-watched-video"
+            class="px-4 py-3 rounded-xl text-xs font-semibold text-forest-950 bg-white hover:bg-forest-100/60 border border-forest-700/40 transition cursor-pointer">
+            I&rsquo;ve already opened the video — Reveal Part II Questions
+          </button>
+        </div>
+      </div>
+
+      <!-- Locked Notice for Graph 2 & Questions 11–20 until Video Link is Clicked -->
+      <div id="part2-questions-locked-placeholder" class="bg-slate-100 border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center space-y-2 no-print">
+        <div class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-200 text-slate-700 text-lg mx-auto" aria-hidden="true">
+          🔒
+        </div>
+        <h3 class="text-base font-extrabold text-slate-900">Gorongosa Graph 2 &amp; Questions 11–20 Are Locked</h3>
+        <p class="text-xs sm:text-sm text-slate-700 max-w-lg mx-auto">
+          Click <strong>Open &amp; Watch Video: Selection for Tuskless Elephants</strong> above to reveal Gorongosa Graph 2 and Questions 11–20.
+        </p>
+      </div>
+
+      <!-- Unlocked Part II Content Wrapper (Gorongosa Graph 2 + Questions 11–20) -->
+      <div id="part2-content-wrapper" class="hidden space-y-6">
+        <!-- Gorongosa Graph 2 (Centered SVG Bar Chart + Required Clarifying Note — NO Regime/Age Group table) -->
+        <figure class="chart-figure bg-slate-50 rounded-2xl border border-slate-200 p-4 sm:p-6 space-y-4">
+          <figcaption class="text-sm sm:text-base font-bold text-slate-900 text-center">
+            Gorongosa Graph 2: Updated Three-Bar Comparison (% Tuskless Females)
+          </figcaption>
+
+          <div class="max-w-2xl mx-auto">
+            <svg viewBox="0 0 510 300" class="w-full h-auto bg-white rounded-xl border border-slate-200 p-2 shadow-2xs" role="img" aria-labelledby="g2-svg-title g2-svg-desc">
+              <title id="g2-svg-title">Gorongosa Graph 2: Updated Three-Bar Comparison (% Tuskless Females)</title>
+              <desc id="g2-svg-desc">Updated bar graph comparing Less Poaching versus Heavy Poaching. Under Less Poaching, All Ages is 6 percent. Under Heavy Poaching, Offspring (10 to 20 Years) is 33 percent, and Civil War Survivors (20 plus Years) is 50 percent.</desc>
+              <defs>
+                <pattern id="g2-hatch-green" width="8" height="8" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                  <rect width="8" height="8" fill="#1e7e4f"/>
+                  <line x1="0" y1="0" x2="0" y2="8" stroke="#145334" stroke-width="2"/>
+                </pattern>
+                <pattern id="g2-hatch-amber" width="8" height="8" patternTransform="rotate(0 0 0)" patternUnits="userSpaceOnUse">
+                  <rect width="8" height="8" fill="#b87300"/>
+                  <line x1="0" y1="0" x2="8" y2="0" stroke="#855100" stroke-width="2"/>
+                </pattern>
+                <pattern id="g2-hatch-coral" width="8" height="8" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+                  <rect width="8" height="8" fill="#c94a38"/>
+                  <line x1="0" y1="0" x2="0" y2="8" stroke="#963325" stroke-width="2"/>
+                </pattern>
+              </defs>
+
+              <!-- Top Regime Brackets: Less Poaching vs Heavy Poaching -->
+              <rect x="85" y="12" width="115" height="22" rx="6" fill="#ecfdf5" stroke="#a7f3d0"/>
+              <text x="142.5" y="27" text-anchor="middle" fill="#145334" font-size="11.5" font-weight="800">Less Poaching</text>
+
+              <rect x="220" y="12" width="265" height="22" rx="6" fill="#fff7ed" stroke="#fed7aa"/>
+              <text x="352.5" y="27" text-anchor="middle" fill="#9a3412" font-size="11.5" font-weight="800">Heavy Poaching</text>
+
+              <!-- Y-Axis Label -->
+              <text x="18" y="142" transform="rotate(-90 18 142)" text-anchor="middle" fill="#0f172a" font-size="13" font-weight="700">
+                % Tuskless Females
+              </text>
+
+              <!-- Gridlines (y=235 down to y=45 => 190px => 1.9px per %) -->
+              <g stroke="#e2e8f0" stroke-width="1">
+                <line x1="68" y1="45" x2="485" y2="45"/>
+                <line x1="68" y1="83" x2="485" y2="83"/>
+                <line x1="68" y1="121" x2="485" y2="121"/>
+                <line x1="68" y1="159" x2="485" y2="159"/>
+                <line x1="68" y1="197" x2="485" y2="197"/>
+              </g>
+
+              <!-- Y-Axis Ticks -->
+              <g fill="#334155" font-size="11.5" font-weight="600" text-anchor="end">
+                <text x="60" y="49">100</text>
+                <text x="60" y="87">80</text>
+                <text x="60" y="125">60</text>
+                <text x="60" y="163">40</text>
+                <text x="60" y="201">20</text>
+                <text x="60" y="239">0</text>
+              </g>
+
+              <!-- Axes -->
+              <line x1="68" y1="40" x2="68" y2="235" stroke="#0f172a" stroke-width="2"/>
+              <line x1="68" y1="235" x2="485" y2="235" stroke="#0f172a" stroke-width="2"/>
+
+              <!-- Bar 1: All Ages = 6% (#1e7e4f) -->
+              <rect x="112" y="223.6" width="60" height="11.4" rx="4" fill="url(#g2-hatch-green)" stroke="#145334" stroke-width="1.5"/>
+              <text x="142" y="216" text-anchor="middle" fill="#1e7e4f" font-size="14" font-weight="800">6%</text>
+              <text x="142" y="257" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="700">All Ages</text>
+
+              <!-- Bar 2: Offspring (10–20 Years) = 33% (#b87300) -->
+              <rect x="248" y="172.3" width="60" height="62.7" rx="4" fill="url(#g2-hatch-amber)" stroke="#855100" stroke-width="1.5"/>
+              <text x="278" y="164" text-anchor="middle" fill="#855100" font-size="14" font-weight="800">33%</text>
+              <text x="278" y="257" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="700">Offspring</text>
+              <text x="278" y="273" text-anchor="middle" fill="#334155" font-size="11" font-weight="600">(10–20 Years)</text>
+
+              <!-- Bar 3: Civil War Survivors (20+ Years) = 50% (#c94a38) -->
+              <rect x="386" y="140" width="60" height="95" rx="4" fill="url(#g2-hatch-coral)" stroke="#963325" stroke-width="1.5"/>
+              <text x="416" y="132" text-anchor="middle" fill="#c94a38" font-size="14" font-weight="800">50%</text>
+              <text x="416" y="257" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="700">Civil War Survivors</text>
+              <text x="416" y="273" text-anchor="middle" fill="#334155" font-size="11" font-weight="600">(20+ Years)</text>
+            </svg>
+          </div>
+
+          <!-- Required Clarifying Note Immediately Below Gorongosa Graph 2 -->
+          <div class="max-w-2xl mx-auto bg-forest-50 border border-forest-700/30 rounded-xl px-4 py-3 text-xs sm:text-sm text-forest-950 font-medium">
+            The green &lsquo;All Ages&rsquo; (6%) bar represents the normal rate of tusklessness in African elephant populations with low poaching&mdash;NOT the current overall average of Gorongosa.
+          </div>
+        </figure>
+
+        <!-- Questions 11–20 -->
+        <div class="space-y-5">
+          <!-- Question 11 (Displays student's saved Q10 prediction in a read-only recap banner right above Q11) -->
+          <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-3">
+            <div class="bg-forest-50 border border-forest-700/25 rounded-xl p-3.5 text-xs text-forest-950">
+              <span class="font-bold uppercase tracking-wider block text-forest-900 mb-0.5">Your Saved Prediction from Question 10:</span>
+              <p id="q11-prediction-recap" class="font-semibold text-slate-900">No prediction recorded yet.</p>
+            </div>
+            <label for="q11" class="block text-sm sm:text-base font-bold text-slate-900">
+              11. Compare your prediction in Question 10 to the new data for Offspring (10–20 Years). Explain whether your prediction was accurate and why.
+            </label>
+            <textarea id="q11" data-item="13" rows="3" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+          </article>
+
+          <!-- Question 12 -->
+          <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-2">
+            <label for="q12" class="block text-sm sm:text-base font-bold text-slate-900">
+              12. Who is leading the elephant study in Gorongosa National Park in Mozambique, Africa?
+            </label>
+            <textarea id="q12" data-item="14" rows="2" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+          </article>
+
+          <!-- Question 13 -->
+          <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-2">
+            <label for="q13" class="block text-sm sm:text-base font-bold text-slate-900">
+              13. What exactly is she studying?
+            </label>
+            <textarea id="q13" data-item="15" rows="2" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+          </article>
+
+          <!-- Question 14 -->
+          <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-2">
+            <label for="q14" class="block text-sm sm:text-base font-bold text-slate-900">
+              14. How did the civil war affect elephant populations in Gorongosa?
+            </label>
+            <textarea id="q14" data-item="16" rows="3" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+          </article>
+
+          <!-- Inheritance Note Callout + Accessible 4-Outcome X-Linked Dominant Male-Lethal Diagram -->
+          <div class="avoid-break bg-slate-100 border border-slate-300 rounded-2xl p-4 sm:p-6 space-y-4">
+            <div class="space-y-1">
+              <span class="inline-block px-2.5 py-0.5 rounded-full bg-forest-900 text-white text-xs font-bold uppercase tracking-wider">
+                Inheritance Note &amp; X-Linked Inheritance Diagram
+              </span>
+              <p class="text-sm sm:text-base text-slate-900 pt-1">
+                <strong>Inheritance note for the next question:</strong> In African elephants, the DNA that causes tusklessness is inherited differently by males and females&mdash;it is fatal to male embryos before birth, whereas female calves survive and inherit the tuskless trait.
+              </p>
+            </div>
+
+            <!-- Accessible 4-Outcome X-Linked Dominant Male-Lethal Inheritance Diagram -->
+            <div class="bg-white rounded-xl border border-slate-200 p-4" role="region" aria-label="X-linked dominant male-lethal inheritance outcomes">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-3">
+                Offspring Inheritance Outcomes: Tuskless Female (X<sup class="font-mono">T</sup>X) &times; Tusked Male (XY)
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                <div class="rounded-xl border border-emerald-300 bg-emerald-50 p-3 space-y-1">
+                  <div class="font-mono font-bold text-emerald-950 text-sm">Female (X<sup>T</sup>X)</div>
+                  <div class="font-bold text-emerald-900">✓ Tuskless Female</div>
+                  <p class="text-slate-700">Inherits the dominant tuskless allele (X<sup>T</sup>) and survives without tusks.</p>
+                </div>
+                <div class="rounded-xl border border-slate-300 bg-slate-50 p-3 space-y-1">
+                  <div class="font-mono font-bold text-slate-900 text-sm">Female (XX)</div>
+                  <div class="font-bold text-slate-800">✓ Tusked Female</div>
+                  <p class="text-slate-700">Inherits normal X chromosomes from both parents and develops tusks.</p>
+                </div>
+                <div class="rounded-xl border border-rose-300 bg-rose-50 p-3 space-y-1">
+                  <div class="font-mono font-bold text-rose-950 text-sm">Male (X<sup>T</sup>Y)</div>
+                  <div class="font-bold text-rose-900">✕ Embryonic Lethal / Does Not Survive</div>
+                  <p class="text-slate-700">Inherits X<sup>T</sup> without a second X chromosome; fatal before birth.</p>
+                </div>
+                <div class="rounded-xl border border-blue-300 bg-blue-50 p-3 space-y-1">
+                  <div class="font-mono font-bold text-blue-950 text-sm">Male (XY)</div>
+                  <div class="font-bold text-blue-900">✓ Tusked Male</div>
+                  <p class="text-slate-700">Inherits a normal X chromosome and survives with tusks.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 15 -->
+          <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-2">
+            <label for="q15" class="block text-sm sm:text-base font-bold text-slate-900">
+              15. Dr. Poole noticed a high proportion of tuskless female elephants after the war, while surviving males still had their tusks. Using the inheritance note above and information from the video, explain why the tuskless trait appears in females rather than males.
+            </label>
+            <textarea id="q15" data-item="17" rows="3" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+          </article>
+
+          <!-- Question 16 with Selective Pressure Vocabulary Callout Badge -->
+          <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-3">
+            <div class="inline-flex flex-wrap items-center gap-2 px-3 py-1.5 rounded-xl bg-earth-50 border border-amber-300 text-xs text-earth-900">
+              <span class="font-bold uppercase tracking-wider bg-earth-100 px-2 py-0.5 rounded-md">Key Term: Selective Pressure</span>
+              <span>An environmental factor (like predators, disease, or hunting) that affects which organisms survive and reproduce.</span>
+            </div>
+            <label for="q16" class="block text-sm sm:text-base font-bold text-slate-900">
+              16. What was the selective pressure that increased the proportion of tuskless elephants during the war?
+            </label>
+            <textarea id="q16" data-item="18" rows="2" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+          </article>
+
+          <!-- Question 17 -->
+          <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-2">
+            <label for="q17" class="block text-sm sm:text-base font-bold text-slate-900">
+              17. Explain how this selective pressure shifted the population to have a higher percentage of tuskless elephants over time. <span class="font-normal text-slate-700">(Include how DNA variation, survival, and reproduction played a role.)</span>
+            </label>
+            <textarea id="q17" data-item="19" rows="3" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+          </article>
+
+          <!-- Question 18 with Selective Advantage Vocabulary Callout Badge -->
+          <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-3">
+            <div class="inline-flex flex-wrap items-center gap-2 px-3 py-1.5 rounded-xl bg-forest-50 border border-forest-700/30 text-xs text-forest-950">
+              <span class="font-bold uppercase tracking-wider bg-forest-100 px-2 py-0.5 rounded-md">Key Term: Selective Advantage</span>
+              <span>An inherited trait (in DNA) that helps an organism survive and reproduce better than individuals without it.</span>
+            </div>
+            <label for="q18" class="block text-sm sm:text-base font-bold text-slate-900">
+              18. Why do tuskless elephants have a selective advantage when poaching is heavy?
+            </label>
+            <textarea id="q18" data-item="20" rows="2" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+          </article>
+
+          <!-- Question 19 -->
+          <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-2">
+            <label for="q19" class="block text-sm sm:text-base font-bold text-slate-900">
+              19. Why did the % of tusklessness drop for elephants born after the war (10–20 years old, dropping from 50% to 33%)?
+            </label>
+            <textarea id="q19" data-item="21" rows="3" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+          </article>
+
+          <!-- Question 20 -->
+          <article class="question-card bg-slate-50/70 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-2">
+            <label for="q20" class="block text-sm sm:text-base font-bold text-slate-900">
+              20. Besides poaching, what other major factor is causing a decline in elephant populations?
+            </label>
+            <textarea id="q20" data-item="22" rows="2" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+          </article>
+
+          <!-- Part II Completion Checkpoint (Gate to Unlock Part III) -->
+          <article id="part2-completion-card" class="question-card rounded-2xl border-2 border-forest-800 bg-forest-50/60 p-5 sm:p-6 space-y-4 shadow-2xs no-print">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-forest-900 text-white text-xs font-bold uppercase tracking-wider">
+                <span aria-hidden="true">✅</span> Part II Checkpoint • Unlocks Part III
+              </span>
+              <span id="part2-progress-badge" class="text-xs font-bold text-forest-950 bg-white px-3 py-1 rounded-full border border-forest-700/30" role="status">
+                Part II Questions Completed: 0 of 10
+              </span>
+            </div>
+
+            <div class="space-y-1">
+              <h3 class="text-sm sm:text-base font-bold text-slate-900">
+                Ready for Part III: Scientific Argument (Claim–Evidence–Reasoning)?
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-700">
+                Complete all 10 questions in Part II (Questions 11–20) to unlock the Part III Claim–Evidence–Reasoning (CER) Workbench.
+              </p>
+            </div>
+
+            <div id="part2-completion-error" class="hidden text-xs font-semibold text-rose-950 bg-rose-100 border border-rose-300 rounded-xl px-3.5 py-2.5" role="alert"></div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+              <button type="button" id="btn-complete-part2" class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-forest-900 hover:bg-forest-800 active:bg-forest-950 text-white text-sm font-bold shadow-xs transition cursor-pointer">
+                <span aria-hidden="true">🔓</span>
+                <span id="btn-complete-part2-text">Complete Part II &amp; Unlock Part III</span>
+              </button>
+              <span class="text-xs text-slate-600">Part III opens automatically once Questions 11–20 are answered.</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         PART III: SCIENTIFIC ARGUMENT (CLAIM–EVIDENCE–REASONING)
+         Locked until Part II (Questions 11–20) is finished.
+         ======================================================================== -->
+    <div id="part3-locked-placeholder" class="bg-slate-100 border-2 border-dashed border-slate-300 rounded-2xl p-6 sm:p-8 text-center space-y-3 no-print">
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-200 text-slate-700 text-xl mx-auto" aria-hidden="true">
+        🔒
+      </div>
+      <h2 class="text-lg font-extrabold text-slate-900">Part III Is Locked</h2>
+      <p class="text-sm text-slate-700 max-w-xl mx-auto">
+        Finish <strong>Questions 11–20 in Part II</strong> to unlock the Claim–Evidence–Reasoning (CER) Workbench.
+      </p>
+      <div class="pt-1 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <span id="part3-gate-progress-text" class="text-xs font-bold text-slate-800 bg-white px-3.5 py-2 rounded-xl border border-slate-300">
+          0 of 10 Part II questions answered
+        </span>
+        <button type="button" id="btn-goto-unanswered-part2" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-forest-900 hover:bg-forest-800 transition cursor-pointer">
+          <span>Go to Next Unanswered Part II Question</span>
+          <span aria-hidden="true">↑</span>
+        </button>
+      </div>
+    </div>
+
+    <section id="section-part3" aria-labelledby="heading-part3" class="part-section hidden bg-white rounded-2xl border border-slate-200 shadow-xs p-5 sm:p-8 space-y-6">
+      <div class="border-b border-slate-200 pb-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-forest-100 text-forest-950 text-xs font-bold uppercase tracking-wider mb-2">
+          Part III • Synthesis &amp; Scientific Argumentation
+        </div>
+        <h2 id="heading-part3" class="text-xl sm:text-2xl font-extrabold text-slate-900">
+          Part III: Scientific Argument (Claim–Evidence–Reasoning)
+        </h2>
+        <p class="mt-2 text-sm sm:text-base text-slate-700">
+          Complete the Claim–Evidence–Reasoning (CER) below to answer the worksheet&rsquo;s title question: <strong>&ldquo;Tusklessness: Problem or Solution?&rdquo;</strong> Cite specific numerical evidence from Table 2, the Gorongosa graphs, and the video.
+        </p>
+      </div>
+
+      <!-- Your Live Evidence Drawer (Starts with every slot showing "Not yet entered" and updates strictly from Q2a, Q2b, Q3a, Q3b, Q4a, and Q10) -->
+      <aside aria-label="Your Live Evidence Drawer" class="bg-slate-50 rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-3 no-print">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <span aria-hidden="true">📋</span>
+            <span>Your Live Evidence Drawer</span>
+          </h3>
+          <span class="text-xs text-slate-600">Updates strictly from your own entered values in Q2a, Q2b, Q3a, Q3b, Q4a, and Q10</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <!-- Column 1: Student's Part I Quantitative Entries -->
+          <div class="bg-white rounded-xl border border-slate-200 p-3.5 space-y-2">
+            <div class="font-bold text-earth-800 uppercase tracking-wider text-[11px]">Your Table 2 Entries</div>
+            <ul class="space-y-1.5 text-slate-800">
+              <li>&bull; <strong>Q2a (Ivory Poached Total):</strong> <span id="drawer-q2a" class="font-mono text-slate-500">Not yet entered</span></li>
+              <li>&bull; <strong>Q2b (Ivory Poached %):</strong> <span id="drawer-q2b" class="font-mono text-slate-500">Not yet entered</span></li>
+              <li>&bull; <strong>Q3a (Tuskless Killed Total):</strong> <span id="drawer-q3a" class="font-mono text-slate-500">Not yet entered</span></li>
+              <li>&bull; <strong>Q3b (Tuskless Killed %):</strong> <span id="drawer-q3b" class="font-mono text-slate-500">Not yet entered</span></li>
+            </ul>
+          </div>
+
+          <!-- Column 2: Percentage Difference & Prediction -->
+          <div class="bg-white rounded-xl border border-slate-200 p-3.5 space-y-2">
+            <div class="font-bold text-forest-900 uppercase tracking-wider text-[11px]">Your Comparison, Prediction &amp; Part II Notes</div>
+            <ul class="space-y-1.5 text-slate-800">
+              <li>&bull; <strong>Q4a (Percentage Difference):</strong> <span id="drawer-q4a" class="font-mono text-slate-500">Not yet entered</span></li>
+              <li>&bull; <strong>Q10 (Your Prediction):</strong> <span id="drawer-q10" class="text-slate-500">Not yet entered</span></li>
+              <li>&bull; <strong>Q16 (Selective Pressure):</strong> <span id="drawer-q16" class="text-slate-500">Not yet entered</span></li>
+              <li>&bull; <strong>Q19 (Post-War Shift):</strong> <span id="drawer-q19" class="text-slate-500">Not yet entered</span></li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CER Writing Boxes -->
+      <div class="space-y-5">
+        <!-- Claim -->
+        <article class="question-card rounded-2xl border-2 border-slate-300 bg-slate-50/70 p-4 sm:p-5 space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <label for="cer-claim" class="text-base font-extrabold text-slate-900">
+              Claim:
+            </label>
+            <span class="text-xs font-medium text-slate-600">Answer: &ldquo;Tusklessness: Problem or Solution?&rdquo;</span>
+          </div>
+          <p class="text-xs text-slate-700">
+            (State whether heavy poaching caused an increase in tuskless elephants, and whether tusklessness is a helpful adaptation, a long-term trade-off, or both.)
+          </p>
+          <textarea id="cer-claim" data-item="23" rows="3" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+        </article>
+
+        <!-- Evidence -->
+        <article class="question-card rounded-2xl border-2 border-slate-300 bg-slate-50/70 p-4 sm:p-5 space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <label for="cer-evidence" class="text-base font-extrabold text-slate-900">
+              Evidence:
+            </label>
+            <span class="text-xs font-medium text-slate-600">Cite specific numbers &amp; percentages</span>
+          </div>
+          <p class="text-xs text-slate-700">
+            (Provide at least two specific numbers or percentages from the data tables, graphs, or video.)
+          </p>
+          <textarea id="cer-evidence" data-item="24" rows="4" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+        </article>
+
+        <!-- Reasoning -->
+        <article class="question-card rounded-2xl border-2 border-slate-300 bg-slate-50/70 p-4 sm:p-5 space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <label for="cer-reasoning" class="text-base font-extrabold text-slate-900">
+              Reasoning:
+            </label>
+            <span class="text-xs font-medium text-slate-600">Connect evidence to evolutionary mechanisms</span>
+          </div>
+          <p class="text-xs text-slate-700">
+            (Explain how your evidence supports your claim using the principles of inheritance, selective pressure, survival, and reproduction.)
+          </p>
+          <textarea id="cer-reasoning" data-item="25" rows="5" placeholder="Type your response here..." class="studio-textarea w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400"></textarea>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Accessible Custom Confirmation Modal for Resetting Worksheet (Replaces window.confirm) -->
+  <div id="reset-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-2xs p-4 no-print" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title" aria-describedby="reset-modal-desc">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-800 flex items-center justify-center shrink-0 font-bold text-lg" aria-hidden="true">
+          !
+        </div>
+        <div class="space-y-1">
+          <h2 id="reset-modal-title" class="text-base font-extrabold text-slate-900">Reset Entire Worksheet?</h2>
+          <p id="reset-modal-desc" class="text-xs sm:text-sm text-slate-700">
+            This will clear all saved answers, calculations, predictions, and Part II unlock progress stored in your browser. This action cannot be undone.
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2.5 pt-2">
+        <button type="button" id="btn-cancel-reset" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition cursor-pointer">
+          Cancel
+        </button>
+        <button type="button" id="btn-confirm-reset" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-700 hover:bg-rose-800 transition cursor-pointer">
+          Yes, Clear All Work
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Logic -->
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'tusklessness_case_study_studio_v4';
+      const TOTAL_ITEMS = 25;
+      const PART2_QUESTIONS = [
+        { num: 11, id: 'q11' },
+        { num: 12, id: 'q12' },
+        { num: 13, id: 'q13' },
+        { num: 14, id: 'q14' },
+        { num: 15, id: 'q15' },
+        { num: 16, id: 'q16' },
+        { num: 17, id: 'q17' },
+        { num: 18, id: 'q18' },
+        { num: 19, id: 'q19' },
+        { num: 20, id: 'q20' }
+      ];
+
+      // Default clean application state
+      const defaultState = {
+        meta: {
+          studentName: '',
+          date: ''
+        },
+        highlightMode: 'none',
+        inputs: {},
+        predictionChoice: '',
+        predictionUnlocked: false,
+        videoWatched: false,
+        part3Unlocked: false,
+        lockedPredictionChoice: '',
+        lockedPredictionText: ''
+      };
+
+      let appState = loadState();
+      let saveTimeout = null;
+
+      // Safe localStorage load & save with try/catch error handling
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return JSON.parse(JSON.stringify(defaultState));
+          const parsed = JSON.parse(raw);
+          return {
+            meta: Object.assign({}, defaultState.meta, parsed.meta || {}),
+            highlightMode: parsed.highlightMode || 'none',
+            inputs: parsed.inputs || {},
+            predictionChoice: parsed.predictionChoice || '',
+            predictionUnlocked: Boolean(parsed.predictionUnlocked),
+            videoWatched: Boolean(parsed.videoWatched),
+            part3Unlocked: Boolean(parsed.part3Unlocked),
+            lockedPredictionChoice: parsed.lockedPredictionChoice || '',
+            lockedPredictionText: parsed.lockedPredictionText || ''
+          };
+        } catch (err) {
+          return JSON.parse(JSON.stringify(defaultState));
+        }
+      }
+
+      function saveState() {
+        const statusEl = document.getElementById('save-status');
+        if (statusEl) {
+          statusEl.textContent = 'Saving...';
+        }
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            if (statusEl) {
+              statusEl.textContent = 'Saved';
+            }
+          } catch (err) {
+            if (statusEl) {
+              statusEl.textContent = 'Local save unavailable';
+            }
+          }
+        }, 180);
+      }
+
+      // Screen-reader polite announcer
+      function announcePolite(message) {
+        const announcer = document.getElementById('sr-announcer');
+        if (!announcer) return;
+        announcer.textContent = '';
+        setTimeout(() => {
+          announcer.textContent = message;
+        }, 40);
+      }
+
+      // Auto-expand textareas vertically so multi-line text never clips on screen
+      function autoResizeTextarea(ta) {
+        if (!ta) return;
+        ta.style.height = 'auto';
+        ta.style.height = `${Math.max(ta.scrollHeight, 72)}px`;
+      }
+
+      // Create word-wrapping print mirror divs for every textarea and non-meta input
+      function initPrintMirrors() {
+        document.querySelectorAll('textarea.studio-textarea, input.studio-input').forEach((field) => {
+          if (field.dataset.meta) return;
+          if (field.nextElementSibling && field.nextElementSibling.classList.contains('print-mirror')) {
+            return;
+          }
+          const mirror = document.createElement('div');
+          mirror.className = 'print-mirror is-empty';
+          mirror.setAttribute('aria-hidden', 'true');
+          mirror.dataset.mirrorFor = field.id || '';
+          mirror.textContent = 'No response entered';
+          field.insertAdjacentElement('afterend', mirror);
+        });
+      }
+
+      // Keep print header and word-wrapping print mirrors synchronized with current inputs
+      function syncPrintMirrors() {
+        const nameVal = (document.getElementById('student-name')?.value || '').trim();
+        const dateVal = (document.getElementById('student-date')?.value || '').trim();
+        const printNameEl = document.getElementById('print-header-name');
+        const printDateEl = document.getElementById('print-header-date');
+
+        if (printNameEl) {
+          printNameEl.textContent = nameVal || '____________________';
+        }
+        if (printDateEl) {
+          printDateEl.textContent = dateVal || '____________';
+        }
+
+        document.querySelectorAll('textarea.studio-textarea, input.studio-input').forEach((field) => {
+          if (field.dataset.meta) return;
+          const mirror = field.nextElementSibling;
+          if (!mirror || !mirror.classList.contains('print-mirror')) return;
+          const val = (field.value || '').trim();
+          if (val) {
+            mirror.textContent = field.value;
+            mirror.classList.remove('is-empty');
+          } else {
+            mirror.textContent = 'No response entered';
+            mirror.classList.add('is-empty');
+          }
+        });
+      }
+
+      // Count answered questions in Part II (Questions 11–20)
+      function countCompletedPart2() {
+        let count = 0;
+        PART2_QUESTIONS.forEach((q) => {
+          const val = (document.getElementById(q.id)?.value || '').trim();
+          if (val.length > 0) {
+            count += 1;
+          }
+        });
+        return count;
+      }
+
+      // Update Part II completion badges and auto-unlock Part III when all 10 Part II questions are answered
+      function updatePart2GateUI() {
+        const completedCount = countCompletedPart2();
+        const badgeEl = document.getElementById('part2-progress-badge');
+        const gateTextEl = document.getElementById('part3-gate-progress-text');
+
+        if (badgeEl) {
+          badgeEl.textContent = `Part II Questions Completed: ${completedCount} of ${PART2_QUESTIONS.length}`;
+        }
+        if (gateTextEl) {
+          gateTextEl.textContent = `${completedCount} of ${PART2_QUESTIONS.length} Part II questions answered`;
+        }
+
+        if (
+          appState.predictionUnlocked &&
+          appState.videoWatched &&
+          completedCount === PART2_QUESTIONS.length &&
+          !appState.part3Unlocked
+        ) {
+          appState.part3Unlocked = true;
+          saveState();
+          applyPart3LockState(false);
+          announcePolite('All Part II questions answered. Part III Scientific Argument is now unlocked.');
+        }
+      }
+
+      // Update overall worksheet completion counter (0 to 25 items)
+      function updateProgress() {
+        const completedSet = new Set();
+
+        document.querySelectorAll('[data-item]').forEach((el) => {
+          const val = (el.value || '').trim();
+          if (val.length > 0) {
+            completedSet.add(el.dataset.item);
+          }
+        });
+
+        const radioOnly = document.querySelector('input[name="q10-radio"]:checked');
+        if (radioOnly) {
+          completedSet.add('12');
+        }
+
+        const progressEl = document.getElementById('progress-text');
+        if (progressEl) {
+          progressEl.textContent = `${completedSet.size} of ${TOTAL_ITEMS} items completed`;
+        }
+      }
+
+      // Update Your Live Evidence Drawer strictly from student-entered values in Parts I and II
+      function updateEvidenceDrawer() {
+        const q2aVal = (document.getElementById('q2a')?.value || '').trim();
+        const q2bPctVal = (document.getElementById('q2b-pct')?.value || '').trim();
+        const q3aVal = (document.getElementById('q3a')?.value || '').trim();
+        const q3bPctVal = (document.getElementById('q3b-pct')?.value || '').trim();
+        const q4aPctVal = (document.getElementById('q4a-pct')?.value || '').trim();
+        const predChoice = appState.lockedPredictionChoice || appState.predictionChoice || '';
+        const q16Val = (document.getElementById('q16')?.value || '').trim();
+        const q19Val = (document.getElementById('q19')?.value || '').trim();
+
+        const setDrawerSlot = (id, text, isHighlighted) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          if (text) {
+            el.textContent = text;
+            el.classList.remove('text-slate-500');
+            el.classList.add(
+              isHighlighted ? 'font-bold' : 'font-medium',
+              isHighlighted ? 'text-forest-900' : 'text-slate-900'
+            );
+          } else {
+            el.textContent = 'Not yet entered';
+            el.classList.add('text-slate-500');
+            el.classList.remove('font-bold', 'font-medium', 'text-forest-900', 'text-slate-900');
+          }
+        };
+
+        setDrawerSlot('drawer-q2a', q2aVal ? `${q2aVal} elephants` : '', true);
+        setDrawerSlot('drawer-q2b', q2bPctVal ? `${q2bPctVal}%` : '', true);
+        setDrawerSlot('drawer-q3a', q3aVal ? `${q3aVal} elephants` : '', true);
+        setDrawerSlot('drawer-q3b', q3bPctVal ? `${q3bPctVal}%` : '', true);
+        setDrawerSlot('drawer-q4a', q4aPctVal ? `${q4aPctVal} percentage points` : '', true);
+        setDrawerSlot('drawer-q10', predChoice, false);
+        setDrawerSlot('drawer-q16', q16Val, false);
+        setDrawerSlot('drawer-q19', q19Val, false);
+      }
+
+      // Interactive Table 2 row highlighting controls
+      function applyTableHighlightMode(mode) {
+        appState.highlightMode = mode;
+
+        document.querySelectorAll('.filter-btn').forEach((btn) => {
+          const isActive = btn.dataset.highlightMode === mode;
+          btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+          if (isActive) {
+            btn.classList.remove('bg-white', 'text-slate-800', 'border-slate-300');
+            btn.classList.add('bg-forest-900', 'text-white', 'border-forest-900');
+          } else {
+            btn.classList.remove('bg-forest-900', 'text-white', 'border-forest-900');
+            btn.classList.add('bg-white', 'text-slate-800', 'border-slate-300');
+          }
+        });
+
+        document.querySelectorAll('#nyirenda-table tbody tr.interactive-row').forEach((row) => {
+          row.classList.remove(
+            'row-highlight-ivory',
+            'row-highlight-tuskless',
+            'row-highlight-total-killed',
+            'row-manual-active'
+          );
+          const rowType = row.dataset.rowType;
+          if (mode === 'ivory' && rowType === 'ivory') {
+            row.classList.add('row-highlight-ivory');
+          } else if (mode === 'tuskless' && rowType === 'tuskless') {
+            row.classList.add('row-highlight-tuskless');
+          } else if (mode === 'total-killed' && rowType === 'total-killed') {
+            row.classList.add('row-highlight-total-killed');
+          }
+        });
+
+        const statusEl = document.getElementById('table-filter-status');
+        if (statusEl) {
+          const labels = {
+            none: 'Showing all rows. Click any row or filter button to highlight values.',
+            ivory: 'Highlighting rows where ivory was poached across all three sites.',
+            tuskless: 'Highlighting rows where elephants had naturally absent tusks (tusklessness).',
+            'total-killed': 'Highlighting the total number of illegally killed elephants row.'
+          };
+          statusEl.textContent = labels[mode] || labels.none;
+        }
+      }
+
+      function setupTableInteractions() {
+        document.querySelectorAll('.filter-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            applyTableHighlightMode(btn.dataset.highlightMode || 'none');
+            saveState();
+          });
+        });
+
+        document.querySelectorAll('#nyirenda-table tbody tr.interactive-row').forEach((row) => {
+          const toggleManualRow = () => {
+            row.classList.toggle('row-manual-active');
+          };
+          row.addEventListener('click', toggleManualRow);
+          row.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              toggleManualRow();
+            }
+          });
+        });
+      }
+
+      // Non-spoiling validation feedback helper
+      function showFeedback(elId, isSuccess, message) {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        el.classList.remove(
+          'hidden',
+          'bg-emerald-50',
+          'text-emerald-950',
+          'border-emerald-300',
+          'bg-amber-50',
+          'text-amber-950',
+          'border-amber-300'
+        );
+        el.classList.add('border');
+        if (isSuccess) {
+          el.classList.add('bg-emerald-50', 'text-emerald-950', 'border-emerald-300');
+        } else {
+          el.classList.add('bg-amber-50', 'text-amber-950', 'border-amber-300');
+        }
+        el.textContent = message;
+        announcePolite(message);
+      }
+
+      // Non-spoiling quantitative check buttons for Q2a, Q2b, Q3a, Q3b, and Q4a
+      function setupChecks() {
+        document.getElementById('btn-check-q2a')?.addEventListener('click', () => {
+          const raw = (document.getElementById('q2a')?.value || '').trim();
+          const val = Number(raw);
+          if (!raw || Number.isNaN(val)) {
+            showFeedback('feedback-q2a', false, 'Enter a number first before checking your work.');
+            return;
+          }
+          if (val === 186) {
+            showFeedback(
+              'feedback-q2a',
+              true,
+              'Correct! Your sum matches the total elephants killed for ivory across all three sites.'
+            );
+          } else {
+            showFeedback(
+              'feedback-q2a',
+              false,
+              'Not quite. Sum the "Total No. Killed" column across all three sites for both rows labeled "ivory poached".'
+            );
+          }
+        });
+
+        document.getElementById('btn-check-q2b')?.addEventListener('click', () => {
+          const numRaw = (document.getElementById('q2b-num')?.value || '').trim();
+          const denRaw = (document.getElementById('q2b-den')?.value || '').trim();
+          const pctRaw = (document.getElementById('q2b-pct')?.value || '').trim();
+
+          const num = Number(numRaw);
+          const den = Number(denRaw);
+          const pct = Number(pctRaw);
+
+          if (!numRaw || !denRaw || !pctRaw || Number.isNaN(num) || Number.isNaN(den) || Number.isNaN(pct)) {
+            showFeedback(
+              'feedback-q2b',
+              false,
+              'Fill in the numerator, denominator, and final percentage before checking your work.'
+            );
+            return;
+          }
+
+          const isCorrect = num === 186 && den === 287 && Math.abs(pct - 64.81) <= 0.25;
+          if (isCorrect) {
+            showFeedback(
+              'feedback-q2b',
+              true,
+              'Correct! Your numerator, denominator, and calculated percentage are accurate.'
+            );
+          } else {
+            showFeedback(
+              'feedback-q2b',
+              false,
+              'Recheck your setup: divide your Question 2a category count by the combined "Total number of illegally killed elephants" across all three sites, then multiply by 100.'
+            );
+          }
+        });
+
+        document.getElementById('btn-check-q3a')?.addEventListener('click', () => {
+          const raw = (document.getElementById('q3a')?.value || '').trim();
+          const val = Number(raw);
+          if (!raw || Number.isNaN(val)) {
+            showFeedback('feedback-q3a', false, 'Enter a number first before checking your work.');
+            return;
+          }
+          if (val === 10) {
+            showFeedback(
+              'feedback-q3a',
+              true,
+              'Correct! Your sum matches the total tuskless elephants killed across all three sites.'
+            );
+          } else {
+            showFeedback(
+              'feedback-q3a',
+              false,
+              'Not quite. Sum the "Total No. Killed" column across all three sites for both rows labeled "(tusklessness)".'
+            );
+          }
+        });
+
+        document.getElementById('btn-check-q3b')?.addEventListener('click', () => {
+          const numRaw = (document.getElementById('q3b-num')?.value || '').trim();
+          const denRaw = (document.getElementById('q3b-den')?.value || '').trim();
+          const pctRaw = (document.getElementById('q3b-pct')?.value || '').trim();
+
+          const num = Number(numRaw);
+          const den = Number(denRaw);
+          const pct = Number(pctRaw);
+
+          if (!numRaw || !denRaw || !pctRaw || Number.isNaN(num) || Number.isNaN(den) || Number.isNaN(pct)) {
+            showFeedback(
+              'feedback-q3b',
+              false,
+              'Fill in the numerator, denominator, and final percentage before checking your work.'
+            );
+            return;
+          }
+
+          const isCorrect = num === 10 && den === 287 && Math.abs(pct - 3.48) <= 0.15;
+          if (isCorrect) {
+            showFeedback(
+              'feedback-q3b',
+              true,
+              'Correct! Your numerator, denominator, and calculated percentage are accurate.'
+            );
+          } else {
+            showFeedback(
+              'feedback-q3b',
+              false,
+              'Recheck your setup: divide your Question 3a tuskless count by the combined "Total number of illegally killed elephants" across all three sites, then multiply by 100.'
+            );
+          }
+        });
+
+        document.getElementById('btn-check-q4a')?.addEventListener('click', () => {
+          const raw = (document.getElementById('q4a-pct')?.value || '').trim();
+          const val = Number(raw);
+          if (!raw || Number.isNaN(val)) {
+            showFeedback('feedback-q4a', false, 'Enter a value first before checking your work.');
+            return;
+          }
+          if (Math.abs(val - 61.33) <= 0.4) {
+            showFeedback(
+              'feedback-q4a',
+              true,
+              'Correct! Your percentage point difference accurately compares Question 2b and Question 3b.'
+            );
+          } else {
+            showFeedback(
+              'feedback-q4a',
+              false,
+              'Not quite. Subtract your percentage in Question 3b from your percentage in Question 2b.'
+            );
+          }
+        });
+      }
+
+      // Apply Part II unlock state (Prediction Gate -> Part II Section)
+      function applyPart2LockState(shouldScroll) {
+        const placeholder = document.getElementById('part2-locked-placeholder');
+        const sectionPart2 = document.getElementById('section-part2');
+        const navLink = document.getElementById('nav-link-part2');
+        const lockIcon = document.getElementById('nav-part2-lock-icon');
+        const badgeEl = document.getElementById('prediction-status-badge');
+        const btnTextEl = document.getElementById('btn-submit-prediction-text');
+        const recapEl = document.getElementById('q11-prediction-recap');
+
+        if (appState.predictionUnlocked) {
+          placeholder?.classList.add('hidden');
+          sectionPart2?.classList.remove('hidden');
+          if (navLink) {
+            navLink.classList.remove('text-slate-500');
+            navLink.classList.add('text-slate-800');
+          }
+          if (lockIcon) {
+            lockIcon.textContent = '🔓';
+          }
+          if (badgeEl) {
+            badgeEl.textContent = 'Prediction Submitted • Part II Unlocked';
+          }
+          if (btnTextEl) {
+            btnTextEl.textContent = 'Update Saved Prediction';
+          }
+          if (recapEl) {
+            const choice = appState.lockedPredictionChoice || appState.predictionChoice || '';
+            const reason = appState.lockedPredictionText || (document.getElementById('q10-reason')?.value || '').trim();
+            recapEl.textContent = reason ? `${choice} — "${reason}"` : choice || 'No prediction recorded yet.';
+          }
+          if (shouldScroll && sectionPart2) {
+            sectionPart2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        } else {
+          placeholder?.classList.remove('hidden');
+          sectionPart2?.classList.add('hidden');
+          if (navLink) {
+            navLink.classList.add('text-slate-500');
+            navLink.classList.remove('text-slate-800');
+          }
+          if (lockIcon) {
+            lockIcon.textContent = '🔒';
+          }
+          if (badgeEl) {
+            badgeEl.textContent = 'Required before viewing Part II';
+          }
+          if (btnTextEl) {
+            btnTextEl.textContent = 'Submit Prediction & Unlock Part II';
+          }
+        }
+      }
+
+      // Apply Video Checkpoint lock state (Video Link -> Gorongosa Graph 2 & Q11–Q20)
+      function applyVideoLockState(shouldScroll) {
+        const videoStatus = document.getElementById('video-checkpoint-status');
+        const qLockedPlaceholder = document.getElementById('part2-questions-locked-placeholder');
+        const contentWrapper = document.getElementById('part2-content-wrapper');
+
+        if (appState.videoWatched) {
+          if (videoStatus) {
+            videoStatus.textContent = 'Status: Video opened • Graph 2 & Questions 11–20 unlocked';
+          }
+          qLockedPlaceholder?.classList.add('hidden');
+          contentWrapper?.classList.remove('hidden');
+          contentWrapper?.querySelectorAll('textarea.studio-textarea').forEach(autoResizeTextarea);
+          if (shouldScroll && contentWrapper) {
+            contentWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        } else {
+          if (videoStatus) {
+            videoStatus.textContent = 'Status: Not yet clicked — Click video link below to unlock';
+          }
+          qLockedPlaceholder?.classList.remove('hidden');
+          contentWrapper?.classList.add('hidden');
+        }
+      }
+
+      // Apply Part III lock state (Questions 11–20 Completed -> Part III CER Section)
+      function applyPart3LockState(shouldScroll) {
+        const placeholder = document.getElementById('part3-locked-placeholder');
+        const sectionPart3 = document.getElementById('section-part3');
+        const navLink = document.getElementById('nav-link-part3');
+        const lockIcon = document.getElementById('nav-part3-lock-icon');
+        const btnText = document.getElementById('btn-complete-part2-text');
+
+        if (appState.part3Unlocked) {
+          placeholder?.classList.add('hidden');
+          sectionPart3?.classList.remove('hidden');
+          if (navLink) {
+            navLink.classList.remove('text-slate-500');
+            navLink.classList.add('text-slate-800');
+          }
+          if (lockIcon) {
+            lockIcon.textContent = '🔓';
+          }
+          if (btnText) {
+            btnText.textContent = 'Part III Unlocked • Jump to CER Workbench';
+          }
+          sectionPart3?.querySelectorAll('textarea.studio-textarea').forEach(autoResizeTextarea);
+          if (shouldScroll && sectionPart3) {
+            sectionPart3.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        } else {
+          placeholder?.classList.remove('hidden');
+          sectionPart3?.classList.add('hidden');
+          if (navLink) {
+            navLink.classList.add('text-slate-500');
+            navLink.classList.remove('text-slate-800');
+          }
+          if (lockIcon) {
+            lockIcon.textContent = '🔒';
+          }
+          if (btnText) {
+            btnText.textContent = 'Complete Part II & Unlock Part III';
+          }
+        }
+      }
+
+      // Wire up Question 10 Prediction Gate, Part II Video Gate, and Part II Completion Gate
+      function setupGates() {
+        // Question 10 Prediction Gate
+        document.getElementById('btn-submit-prediction')?.addEventListener('click', () => {
+          const selectedRadio = document.querySelector('input[name="q10-radio"]:checked');
+          const reasonVal = (document.getElementById('q10-reason')?.value || '').trim();
+          const errEl = document.getElementById('prediction-error');
+
+          if (!selectedRadio || !reasonVal) {
+            if (errEl) {
+              errEl.textContent =
+                'Please select a prediction option AND write your rationale before unlocking Part II.';
+              errEl.classList.remove('hidden');
+            }
+            announcePolite('Please complete both your prediction choice and rationale before unlocking Part II.');
+            return;
+          }
+
+          errEl?.classList.add('hidden');
+          appState.predictionChoice = selectedRadio.value;
+          appState.lockedPredictionChoice = selectedRadio.value;
+          appState.lockedPredictionText = reasonVal;
+          appState.predictionUnlocked = true;
+
+          saveState();
+          applyPart2LockState(true);
+          applyVideoLockState(false);
+          updatePart2GateUI();
+          updateEvidenceDrawer();
+          updateProgress();
+          announcePolite('Prediction submitted. Part II is now unlocked.');
+        });
+
+        // Video Checkpoint Unlock (Clicking video link or confirmation button)
+        const handleUnlockVideo = (shouldScroll) => {
+          appState.videoWatched = true;
+          saveState();
+          applyVideoLockState(shouldScroll);
+          updatePart2GateUI();
+          announcePolite('Gorongosa Graph 2 and Questions 11 through 20 are now unlocked.');
+        };
+
+        document.getElementById('btn-watch-video')?.addEventListener('click', () => {
+          handleUnlockVideo(false);
+        });
+
+        document.getElementById('btn-already-watched-video')?.addEventListener('click', () => {
+          handleUnlockVideo(true);
+        });
+
+        // Part II Completion Gate -> Unlocks Part III
+        document.getElementById('btn-complete-part2')?.addEventListener('click', () => {
+          const errEl = document.getElementById('part2-completion-error');
+          const firstMissing = PART2_QUESTIONS.find(
+            (q) => !(document.getElementById(q.id)?.value || '').trim()
+          );
+
+          if (firstMissing) {
+            if (errEl) {
+              errEl.textContent = `Please answer Question ${firstMissing.num} (and all remaining Part II questions) before unlocking Part III.`;
+              errEl.classList.remove('hidden');
+            }
+            const targetEl = document.getElementById(firstMissing.id);
+            targetEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targetEl?.focus();
+            announcePolite(`Question ${firstMissing.num} is still unanswered.`);
+            return;
+          }
+
+          errEl?.classList.add('hidden');
+          appState.part3Unlocked = true;
+          saveState();
+          applyPart3LockState(true);
+          announcePolite('Part III Scientific Argument is now unlocked.');
+        });
+
+        // Quick jump from Part III locked card to next unanswered Part II question
+        document.getElementById('btn-goto-unanswered-part2')?.addEventListener('click', () => {
+          if (!appState.predictionUnlocked) {
+            const gate = document.getElementById('prediction-gate-card');
+            gate?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+          if (!appState.videoWatched) {
+            const videoCard = document.getElementById('video-checkpoint-card');
+            videoCard?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+          const firstMissing = PART2_QUESTIONS.find(
+            (q) => !(document.getElementById(q.id)?.value || '').trim()
+          );
+          if (firstMissing) {
+            const targetEl = document.getElementById(firstMissing.id);
+            targetEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targetEl?.focus();
+          } else {
+            appState.part3Unlocked = true;
+            saveState();
+            applyPart3LockState(true);
+          }
+        });
+      }
+
+      // Guard stage navigation links when sections are still locked
+      function setupNavLinks() {
+        document.getElementById('nav-link-part2')?.addEventListener('click', (e) => {
+          if (!appState.predictionUnlocked) {
+            e.preventDefault();
+            const gate = document.getElementById('prediction-gate-card');
+            gate?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            announcePolite('Part II is locked until you submit your prediction in Question 10.');
+          }
+        });
+
+        document.getElementById('nav-link-part3')?.addEventListener('click', (e) => {
+          if (!appState.part3Unlocked) {
+            e.preventDefault();
+            if (!appState.predictionUnlocked) {
+              document.getElementById('prediction-gate-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              announcePolite('Complete Question 10 and Part II before opening Part III.');
+            } else if (!appState.videoWatched) {
+              document.getElementById('video-checkpoint-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              announcePolite('Open the video clip and finish Questions 11 through 20 before opening Part III.');
+            } else {
+              const firstMissing = PART2_QUESTIONS.find(
+                (q) => !(document.getElementById(q.id)?.value || '').trim()
+              );
+              if (firstMissing) {
+                const targetEl = document.getElementById(firstMissing.id);
+                targetEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetEl?.focus();
+                announcePolite(`Finish Question ${firstMissing.num} and remaining Part II questions to unlock Part III.`);
+              }
+            }
+          }
+        });
+      }
+
+      // Accessible Custom Confirmation Modal for Resetting Worksheet
+      function setupResetModal() {
+        const modal = document.getElementById('reset-modal');
+        const openBtn = document.getElementById('btn-open-reset');
+        const cancelBtn = document.getElementById('btn-cancel-reset');
+        const confirmBtn = document.getElementById('btn-confirm-reset');
+
+        const openModal = () => {
+          if (!modal) return;
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+          cancelBtn?.focus();
+        };
+
+        const closeModal = () => {
+          if (!modal) return;
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          openBtn?.focus();
+        };
+
+        openBtn?.addEventListener('click', openModal);
+        cancelBtn?.addEventListener('click', closeModal);
+
+        modal?.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            closeModal();
+          }
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+            closeModal();
+          }
+        });
+
+        confirmBtn?.addEventListener('click', () => {
+          try {
+            localStorage.removeItem(STORAGE_KEY);
+          } catch (err) {
+            // Ignore storage removal errors in restricted environments
+          }
+
+          appState = JSON.parse(JSON.stringify(defaultState));
+
+          document.querySelectorAll('[data-meta]').forEach((el) => {
+            el.value = '';
+          });
+
+          document.querySelectorAll('textarea.studio-textarea').forEach((ta) => {
+            ta.value = '';
+            ta.style.height = '';
+          });
+
+          document.querySelectorAll('input.studio-input').forEach((inp) => {
+            if (!inp.dataset.meta) {
+              inp.value = '';
+            }
+          });
+
+          document.querySelectorAll('input[name="q10-radio"]').forEach((radio) => {
+            radio.checked = false;
+          });
+
+          [
+            'feedback-q2a',
+            'feedback-q2b',
+            'feedback-q3a',
+            'feedback-q3b',
+            'feedback-q4a',
+            'prediction-error',
+            'part2-completion-error'
+          ].forEach((id) => {
+            document.getElementById(id)?.classList.add('hidden');
+          });
+
+          // Re-lock Part II, Video Checkpoint, and Part III
+          applyTableHighlightMode('none');
+          applyPart2LockState(false);
+          applyVideoLockState(false);
+          applyPart3LockState(false);
+          syncPrintMirrors();
+          updatePart2GateUI();
+          updateEvidenceDrawer();
+          updateProgress();
+
+          const statusEl = document.getElementById('save-status');
+          if (statusEl) {
+            statusEl.textContent = 'Saved';
+          }
+
+          closeModal();
+          announcePolite('Worksheet has been reset and all saved answers were cleared.');
+        });
+      }
+
+      // Restore all saved values from localStorage on page load
+      function restoreUIFromState() {
+        document.querySelectorAll('[data-meta]').forEach((el) => {
+          const key = el.dataset.meta;
+          if (key && appState.meta[key]) {
+            el.value = appState.meta[key];
+          }
+        });
+
+        Object.entries(appState.inputs).forEach(([id, val]) => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.value = val;
+            if (el.tagName === 'TEXTAREA') {
+              autoResizeTextarea(el);
+            }
+          }
+        });
+
+        if (appState.predictionChoice) {
+          document.querySelectorAll('input[name="q10-radio"]').forEach((radio) => {
+            radio.checked = radio.value === appState.predictionChoice;
+          });
+        }
+
+        applyTableHighlightMode(appState.highlightMode || 'none');
+        applyPart2LockState(false);
+        applyVideoLockState(false);
+        applyPart3LockState(false);
+        syncPrintMirrors();
+        updatePart2GateUI();
+        updateEvidenceDrawer();
+        updateProgress();
+      }
+
+      // Bind live input listeners for auto-save, resizing, print mirrors, evidence drawer & gates
+      function bindInputs() {
+        document.querySelectorAll('[data-meta]').forEach((el) => {
+          el.addEventListener('input', () => {
+            const key = el.dataset.meta;
+            if (key) {
+              appState.meta[key] = el.value;
+            }
+            syncPrintMirrors();
+            saveState();
+          });
+        });
+
+        document.querySelectorAll('textarea.studio-textarea, input.studio-input').forEach((el) => {
+          if (el.dataset.meta) return;
+          el.addEventListener('input', () => {
+            if (el.id) {
+              appState.inputs[el.id] = el.value;
+            }
+            if (el.tagName === 'TEXTAREA') {
+              autoResizeTextarea(el);
+            }
+            syncPrintMirrors();
+            updatePart2GateUI();
+            updateEvidenceDrawer();
+            updateProgress();
+            saveState();
+          });
+        });
+
+        document.querySelectorAll('input[name="q10-radio"]').forEach((radio) => {
+          radio.addEventListener('change', () => {
+            if (radio.checked) {
+              appState.predictionChoice = radio.value;
+              updateEvidenceDrawer();
+              updateProgress();
+              saveState();
+            }
+          });
+        });
+
+        // Print / Save PDF button & browser beforeprint hook
+        document.getElementById('btn-print-pdf')?.addEventListener('click', () => {
+          syncPrintMirrors();
+          window.print();
+        });
+
+        window.addEventListener('beforeprint', syncPrintMirrors);
+      }
+
+      // Initialize application
+      function init() {
+        initPrintMirrors();
+        setupTableInteractions();
+        setupChecks();
+        setupGates();
+        setupNavLinks();
+        setupResetModal();
+        bindInputs();
+        restoreUIFromState();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+</body>
+</html>
